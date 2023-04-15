@@ -107,8 +107,11 @@ def main():
                             # Redraw the board with the updated pieces
                             chess_piece.redraw_pieces_on_board(pieces, board, screen)
 
+                            # Deselect the selected piece after moving it or attempting to move it
+                            selected_piece = None
+
                         # Deselect the selected piece after moving it or attempting to move it
-                        selected_piece = None
+                        # selected_piece = None
 
                 # Right mouse click
                 elif event.button == 3:
