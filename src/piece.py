@@ -18,34 +18,14 @@ class Piece:
 
         pieces = []
         for i in range(8):
+            # Adding pawns to initial positions
             pieces.append(Piece("black", i, 1, "pawn"))
             pieces.append(Piece("white", i, 6, "pawn"))
 
-            # Adding rooks
-            pieces.append(Piece("black", 0, 0, "rook"))
-            pieces.append(Piece("black", 7, 0, "rook"))
-            pieces.append(Piece("white", 0, 7, "rook"))
-            pieces.append(Piece("white", 7, 7, "rook"))
-
-            # Adding knights
-            pieces.append(Piece("black", 1, 0, "knight"))
-            pieces.append(Piece("black", 6, 0, "knight"))
-            pieces.append(Piece("white", 1, 7, "knight"))
-            pieces.append(Piece("white", 6, 7, "knight"))
-
-            # Adding bishops
-            pieces.append(Piece("black", 2, 0, "bishop"))
-            pieces.append(Piece("black", 5, 0, "bishop"))
-            pieces.append(Piece("white", 2, 7, "bishop"))
-            pieces.append(Piece("white", 5, 7, "bishop"))
-
-            # Adding queens
-            pieces.append(Piece("black", 3, 0, "queen"))
-            pieces.append(Piece("white", 3, 7, "queen"))
-
-            # Adding kings
-            pieces.append(Piece("black", 4, 0, "king"))
-            pieces.append(Piece("white", 4, 7, "king"))
+        # Adding rooks, knights, bishops, queens, and kings to initial positions
+        for i, piece_type in enumerate(["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]):
+            pieces.append(Piece("black", i, 0, piece_type))
+            pieces.append(Piece("white", i, 7, piece_type))
 
         # Drawing all the chess pieces on board surface
         for piece in pieces:

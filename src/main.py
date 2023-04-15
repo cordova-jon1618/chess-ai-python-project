@@ -10,33 +10,7 @@ def main():
     chess_piece = Piece(None, None, None, None)
     pieces = chess_piece.place_pieces_on_board(board, screen)
 
-    # while True:
-    #     for event in pygame.event.get():
-    #         if event.type == pygame.QUIT:
-    #             pygame.quit()
-    #             exit()
-    #
-    #         if event.type == pygame.MOUSEBUTTONDOWN:
-    #             # Get the position of the click
-    #             pos = pygame.mouse.get_pos()
-    #
-    #             # Convert the position to board coordinates
-    #             x = (pos[0] - 20) // 75
-    #             y = (pos[1] - 20) // 75
-    #
-    #             # Find the piece at the clicked position
-    #             for piece in pieces:
-    #                 if piece.x == x and piece.y == y:
-    #                     # move the piece
-    #                     pos = pygame.mouse.get_pos()
-    #                     x = (pos[0] - 20) // 75
-    #                     y = (pos[1] - 20) // 75
-    #                     piece.x = x
-    #                     piece.y = y
-    #             print("Mouse event has been called.")
-    #
-    #     # Redraws the board after a move
-    #     chess_piece.redraw_pieces_on_board(pieces, board, screen)
+    # movement = Movement(board, screen)
     running = True
     selected_piece = None
     while running:
@@ -45,6 +19,10 @@ def main():
                 running = False
                 pygame.quit()
                 exit()
+
+            # Handling mouse click
+            # if event.type == pygame.MOUSEBUTTONDOWN:
+            #     selected_piece = movement.handle_mouse_click(event, selected_piece, pieces, board, screen)
 
             # Handling mouse click
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -57,10 +35,15 @@ def main():
                             selected_piece = p
                             break
                 else:
+                    # Remove the existing piece at the target location, if any
+                    pieces = [p for p in pieces if not (p.x == grid_x and p.y == grid_y)]
+
+                    # Move the selected piece to the new location
                     selected_piece.x = grid_x
                     selected_piece.y = grid_y
                     selected_piece = None
 
+                    # Redraw the board with the updated pieces
                     chess_piece.redraw_pieces_on_board(pieces, board, screen)
 
 
