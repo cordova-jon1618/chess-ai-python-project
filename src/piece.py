@@ -57,6 +57,24 @@ class Piece:
         # update the display
         pygame.display.update()
 
-# def place_pieces_on_board(board, screen):
-#   piece = Piece(None, None, None, None)
-#   piece.place_pieces_on_board(board, screen)
+    def redraw_pieces_on_board_with_green_highlight(self, pieces, board, screen, highlighted_square):
+        # Redraw the board and pieces
+        board.fill((255, 206, 158))
+        for x in range(0, 8, 2):
+            for y in range(0, 8, 2):
+                pygame.draw.rect(board, (210, 180, 140), (x * 75, y * 75, 75, 75))
+                pygame.draw.rect(board, (210, 180, 140), ((x + 1) * 75, (y + 1) * 75, 75, 75))
+
+        # Highlight the selected square with light green
+        pygame.draw.rect(board, (180, 240, 180), (highlighted_square[0] * 75, highlighted_square[1] * 75, 75, 75))
+
+        for piece in pieces:
+            piece.draw(board)
+
+        # Add the board to the screen
+        screen.blit(board, (20, 20))
+
+        # Update the display
+        pygame.display.update()
+
+
