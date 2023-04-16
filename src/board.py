@@ -8,9 +8,10 @@ class Board:
         pygame.init()
 
         # Setting up window object
-        size = (640, 640)
+        # size = (640, 640)
+        size = (640, 740)
         screen = pygame.display.set_mode(size)
-        pygame.display.set_caption("AI Chess Game Project")
+        pygame.display.set_caption("AI Chess Game Project - COMP 469 by Jonathan Cordova and Alvaro Lopez-Romero")
 
         # Setting up board object
         board = pygame.Surface((600, 600))
