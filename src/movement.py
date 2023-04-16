@@ -1,13 +1,13 @@
 import pygame
 from piece import Piece
+from game_logic import add_to_score
 
-
-def handle_mouse_click(event, pieces_array, board, screen, selected_piece):
+def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuristic_score, additional_score):
     # Board Only Mouse Controls
     # ------------------------------------------------------------
     mouse_x, mouse_y = event.pos
     grid_x, grid_y = (mouse_x - 20) // 75, (mouse_y - 20) // 75
-    chess_piece = Piece(None, None, None, None)
+    chess_piece = Piece(None, None, None, None, None)
 
     # Left mouse click
     if event.button == 1:
@@ -30,8 +30,8 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece):
                 if (selected_piece != None):
                     print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
 
-                # Remove the existing piece at the target location, if any, and add the new piece
-                pieces_array = remove_piece_at_position(pieces_array, grid_x, grid_y, selected_piece)
+                # Remove the existing piece at the target location
+                pieces_array, heuristic_score, additional_score = remove_piece_at_position(pieces_array, grid_x, grid_y, heuristic_score, additional_score)
 
                 # Debugging
                 # --------------------------------
@@ -70,13 +70,29 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece):
         # Redraw the board
         chess_piece.redraw_pieces_on_board(pieces_array, board, screen)
 
-    return selected_piece, pieces_array
+    return selected_piece, pieces_array, heuristic_score, additional_score
 
 
-def remove_piece_at_position(pieces_array, grid_x, grid_y, selected_piece):
-    updated_pieces = [p for p in pieces_array if not (p.x == grid_x and p.y == grid_y)]
-    # updated_pieces.append(new_piece)
-    return updated_pieces
+# def remove_piece_at_position(pieces_array, grid_x, grid_y, selected_piece):
+#     updated_pieces = [p for p in pieces_array if not (p.x == grid_x and p.y == grid_y)]
+#
+#     return updated_pieces
+
+
+def remove_piece_at_position(pieces_array, grid_x, grid_y, heuristic_score, additional_score):
+    piece_to_remove = None
+    updated_pieces = []
+    for p in pieces_array:
+        if p.x == grid_x and p.y == grid_y:
+            piece_to_remove = p
+        else:
+            # if it is not the piece that needs to be removed, it adds it back to the array
+            updated_pieces.append(p)
+
+    if piece_to_remove:
+        heuristic_score, additional_score = add_to_score(piece_to_remove, heuristic_score, additional_score)
+
+    return updated_pieces, heuristic_score, additional_score
 
 
 def display_pieces_array(pieces):

@@ -4,11 +4,12 @@ import pygame
 
 
 class Piece:
-    def __init__(self, color, x, y, piece_type):
+    def __init__(self, color, x, y, piece_type, value):
         self.color = color
         self.x = x
         self.y = y
         self.type = piece_type
+        self.value = value
 
     def draw(self, surface):
         img = pygame.image.load(f"img/{self.type}-{self.color}.png")
@@ -16,16 +17,34 @@ class Piece:
 
     def place_pieces_on_board(self, board, screen):
 
+        # Values of the chess pieces
+        PIECE_VALUES = {
+            "pawn": 1,
+            "knight": 3,
+            "bishop": 3,
+            "rook": 5,
+            "queen": 9,
+            "king": 100,
+        }
+
         pieces = []
+        white_pieces = []
+        black_pieces = []
         for i in range(8):
             # Adding pawns to initial positions
-            pieces.append(Piece("black", i, 1, "pawn"))
-            pieces.append(Piece("white", i, 6, "pawn"))
+            black_pawn = Piece("black", i, 1, "pawn", -1 * PIECE_VALUES["pawn"])
+            white_pawn = Piece("white", i, 6, "pawn", PIECE_VALUES["pawn"])
+            pieces.extend([black_pawn, white_pawn])
+            black_pieces.append(black_pawn)
+            white_pieces.append(white_pawn)
 
         # Adding rooks, knights, bishops, queens, and kings to initial positions
         for i, piece_type in enumerate(["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]):
-            pieces.append(Piece("black", i, 0, piece_type))
-            pieces.append(Piece("white", i, 7, piece_type))
+            black_piece = Piece("black", i, 0, piece_type, -1 * PIECE_VALUES[piece_type])
+            white_piece = Piece("white", i, 7, piece_type, PIECE_VALUES[piece_type])
+            pieces.extend([black_piece, white_piece])
+            black_pieces.append(black_piece)
+            white_pieces.append(white_piece)
 
         # Drawing all the chess pieces on board surface
         for piece in pieces:
@@ -38,7 +57,7 @@ class Piece:
         pygame.display.flip()
 
         # Return the pieces array to main.py
-        return pieces
+        return pieces, white_pieces, black_pieces
 
     def redraw_pieces_on_board(self, pieces_array, board, screen):
         # redraw the board and pieces

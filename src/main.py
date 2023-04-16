@@ -2,19 +2,20 @@ import pygame
 from board import Board
 from piece import Piece
 from movement import handle_mouse_click
-from game_logic import draw_ui_elements
+from game_logic import draw_ui_elements, update_UI_view
 
 
 # Notes: We will not implement the following chess functionality
 # No two space move by pawns during their first move
 # No castling by King and Rook
 
+
 def initialize_chess_game():
     chess_board = Board()
     board, screen = chess_board.make_board()
 
-    chess_piece = Piece(None, None, None, None)
-    pieces_array = chess_piece.place_pieces_on_board(board, screen)
+    chess_piece = Piece(None, None, None, None, None)
+    pieces_array, white_pieces_array, black_pieces_array = chess_piece.place_pieces_on_board(board, screen)
 
     running = True
     selected_piece = None
@@ -40,15 +41,18 @@ def initialize_chess_game():
                     print("Reset button clicked")
                     # Clear the board and reset the game
                     chess_board.reset_board(board)
-                    pieces_array = chess_piece.place_pieces_on_board(board, screen)
+                    pieces_array, white_pieces_array, black_pieces_array = chess_piece.place_pieces_on_board(board, screen)
                     selected_piece = None
                     heuristic_score = 0
                     additional_score = 0
+                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
 
                 else:
-                    # Handle regular piece selection
-                    selected_piece, pieces_array = handle_mouse_click(event, pieces_array, board, screen,
-                                                                      selected_piece)
+                    # Handle piece mouse click events
+                    selected_piece, pieces_array, heuristic_score, additional_score = handle_mouse_click(event, pieces_array, board, screen,
+                                                                      selected_piece, heuristic_score, additional_score)
+
+                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
 
         pygame.display.flip()
 

@@ -33,3 +33,37 @@ def draw_ui_elements(screen, heuristic_score, additional_score):
     screen.blit(additional_score_text, (375, 680))
 
     return start_button, reset_button
+
+
+def update_UI_view(screen, heuristic_score, additional_score):
+    font_name = "calibri"
+    font = pygame.font.SysFont(font_name, 24)
+    # font = pygame.font.Font(None, 28)
+    bold_font = pygame.font.SysFont(font_name, 24)  # Create a separate font for bold text
+    bold_font.set_bold(True)  # Make the bold_font bold
+
+    # Clear the area where the scores are displayed
+    pygame.draw.rect(screen, (0, 0, 0), (375, 650, 250, 50))
+    pygame.draw.rect(screen, (0, 0, 0), (375, 680, 250, 50))
+
+    # Redraw the score text with the new values
+    score_text = font.render(f"AI Heuristic Score: {heuristic_score}", True, (255, 255, 255))
+    additional_score_text = font.render(f"My Heuristic Score: {additional_score}", True, (255, 255, 255))
+    screen.blit(score_text, (375, 650))
+    screen.blit(additional_score_text, (375, 680))
+
+    # Redraw the UI buttons
+    start_button, reset_button = draw_ui_elements(screen, heuristic_score, additional_score)
+
+    # Update the display
+    pygame.display.flip()
+
+    return start_button, reset_button
+
+
+def add_to_score(piece_captured, heuristic_score, additional_score):
+    if piece_captured.color == 'black':
+        additional_score += piece_captured.value
+    elif piece_captured.color == 'white':
+        heuristic_score += piece_captured.value
+    return heuristic_score, additional_score
