@@ -9,7 +9,7 @@ def main():
     board, screen = chess_board.make_board()
 
     chess_piece = Piece(None, None, None, None)
-    pieces = chess_piece.place_pieces_on_board(board, screen)
+    pieces_array = chess_piece.place_pieces_on_board(board, screen)
 
     running = True
     selected_piece = None
@@ -22,7 +22,7 @@ def main():
 
             # Handling mouse click
             if event.type == pygame.MOUSEBUTTONDOWN:
-                selected_piece = handle_mouse_click(event, pieces, board, screen, selected_piece)
+                selected_piece, pieces_array = handle_mouse_click(event, pieces_array, board, screen, selected_piece)
 
 
 if __name__ == "__main__":

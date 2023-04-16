@@ -40,7 +40,7 @@ class Piece:
         # Return the pieces array to main.py
         return pieces
 
-    def redraw_pieces_on_board(self, pieces, board, screen):
+    def redraw_pieces_on_board(self, pieces_array, board, screen):
         # redraw the board and pieces
         board.fill((255, 206, 158))
         for x in range(0, 8, 2):
@@ -48,7 +48,7 @@ class Piece:
                 pygame.draw.rect(board, (210, 180, 140), (x * 75, y * 75, 75, 75))
                 pygame.draw.rect(board, (210, 180, 140), ((x + 1) * 75, (y + 1) * 75, 75, 75))
 
-        for piece in pieces:
+        for piece in pieces_array:
             piece.draw(board)
 
         # add the board to the screen
