@@ -1,14 +1,15 @@
+import pygame
 from piece import Piece
 
 
 def handle_mouse_click(event, pieces_array, board, screen, selected_piece, start_button, reset_button):
-
     mouse_pos = event.pos
 
     if start_button.collidepoint(mouse_pos):
         print("Start button clicked")
     elif reset_button.collidepoint(mouse_pos):
         print("Reset button clicked")
+
     else:
         # Board Only Mouse Controls
         # ------------------------------------------------------------
@@ -114,7 +115,8 @@ def is_valid_move(piece, target_x, target_y, pieces):
         if dx != 0 and dy != 0:
             return False
         for p in pieces:
-            if (p.x == target_x and p.y < max(piece.y, target_y) and p.y > min(piece.y, target_y)) or (p.y == target_y and p.x < max(piece.x, target_x) and p.x > min(piece.x, target_x)):
+            if (p.x == target_x and p.y < max(piece.y, target_y) and p.y > min(piece.y, target_y)) or (
+                    p.y == target_y and p.x < max(piece.x, target_x) and p.x > min(piece.x, target_x)):
                 return False
         return True
 
@@ -127,7 +129,9 @@ def is_valid_move(piece, target_x, target_y, pieces):
         if dx != dy:
             return False
         for p in pieces:
-            if abs(p.x - piece.x) == abs(p.y - piece.y) and max(piece.x, target_x) > p.x > min(piece.x, target_x) and p.y < max(piece.y, target_y) and p.y > min(piece.y, target_y):
+            if abs(p.x - piece.x) == abs(p.y - piece.y) and max(piece.x, target_x) > p.x > min(piece.x,
+                                                                                               target_x) and p.y < max(
+                piece.y, target_y) and p.y > min(piece.y, target_y):
                 return False
         return True
 
