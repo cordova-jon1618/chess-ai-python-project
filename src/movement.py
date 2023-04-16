@@ -2,81 +2,73 @@ import pygame
 from piece import Piece
 
 
-def handle_mouse_click(event, pieces_array, board, screen, selected_piece, start_button, reset_button):
-    mouse_pos = event.pos
+def handle_mouse_click(event, pieces_array, board, screen, selected_piece):
+    # Board Only Mouse Controls
+    # ------------------------------------------------------------
+    mouse_x, mouse_y = event.pos
+    grid_x, grid_y = (mouse_x - 20) // 75, (mouse_y - 20) // 75
+    chess_piece = Piece(None, None, None, None)
 
-    if start_button.collidepoint(mouse_pos):
-        print("Start button clicked")
-    elif reset_button.collidepoint(mouse_pos):
-        print("Reset button clicked")
+    # Left mouse click
+    if event.button == 1:
+        if selected_piece is None:
+            print("Selected Piece is: ", selected_piece)
+            for p in pieces_array:
+                if p.x == grid_x and p.y == grid_y:
+                    selected_piece = p
+                    print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
+                    chess_piece.redraw_pieces_on_board_with_green_highlight(pieces_array, board, screen,
+                                                                            (grid_x, grid_y))
+                    break
 
-    else:
-        # Board Only Mouse Controls
-        # ------------------------------------------------------------
-        mouse_x, mouse_y = event.pos
-        grid_x, grid_y = (mouse_x - 20) // 75, (mouse_y - 20) // 75
-        chess_piece = Piece(None, None, None, None)
+        else:
+            if (selected_piece != None):
+                print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
 
-        # Left mouse click
-        if event.button == 1:
-            if selected_piece is None:
-                print("Selected Piece is: ", selected_piece)
-                for p in pieces_array:
-                    if p.x == grid_x and p.y == grid_y:
-                        selected_piece = p
-                        print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
-                        chess_piece.redraw_pieces_on_board_with_green_highlight(pieces_array, board, screen,
-                                                                                (grid_x, grid_y))
-                        break
+            if is_valid_move(selected_piece, grid_x, grid_y, pieces_array):
 
-            else:
                 if (selected_piece != None):
                     print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
 
-                if is_valid_move(selected_piece, grid_x, grid_y, pieces_array):
+                # Remove the existing piece at the target location, if any, and add the new piece
+                pieces_array = remove_piece_at_position(pieces_array, grid_x, grid_y, selected_piece)
 
-                    if (selected_piece != None):
-                        print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
+                # Debugging
+                # --------------------------------
+                # display_pieces_array(pieces_array)
+                # --------------------------------
 
-                    # Remove the existing piece at the target location, if any, and add the new piece
-                    pieces_array = remove_piece_at_position(pieces_array, grid_x, grid_y, selected_piece)
+                # Move the selected piece to the new location
+                selected_piece.x = grid_x
+                selected_piece.y = grid_y
 
-                    # Debugging
-                    # --------------------------------
-                    # display_pieces_array(pieces_array)
-                    # --------------------------------
+                # Update the selected_piece in the pieces list
+                for i, p in enumerate(pieces_array):
+                    if p == selected_piece:
+                        pieces_array[i] = selected_piece
+                        break
 
-                    # Move the selected piece to the new location
-                    selected_piece.x = grid_x
-                    selected_piece.y = grid_y
+                # Debugging
+                # --------------------------------
+                # display_pieces_array(pieces_array)
+                # --------------------------------
 
-                    # Update the selected_piece in the pieces list
-                    for i, p in enumerate(pieces_array):
-                        if p == selected_piece:
-                            pieces_array[i] = selected_piece
-                            break
+                # Redraw the board with the updated pieces
+                chess_piece.redraw_pieces_on_board(pieces_array, board, screen)
 
-                    # Debugging
-                    # --------------------------------
-                    # display_pieces_array(pieces_array)
-                    # --------------------------------
+                # Debugging
+                # --------------------------------
+                # display_pieces_array(pieces_array)
+                # --------------------------------
 
-                    # Redraw the board with the updated pieces
-                    chess_piece.redraw_pieces_on_board(pieces_array, board, screen)
+                # Deselect the selected piece after moving it or attempting to move it
+                selected_piece = None
 
-                    # Debugging
-                    # --------------------------------
-                    # display_pieces_array(pieces_array)
-                    # --------------------------------
-
-                    # Deselect the selected piece after moving it or attempting to move it
-                    selected_piece = None
-
-        # Right mouse click
-        elif event.button == 3:
-            selected_piece = None
-            # Redraw the board
-            chess_piece.redraw_pieces_on_board(pieces_array, board, screen)
+    # Right mouse click
+    elif event.button == 3:
+        selected_piece = None
+        # Redraw the board
+        chess_piece.redraw_pieces_on_board(pieces_array, board, screen)
 
     return selected_piece, pieces_array
 

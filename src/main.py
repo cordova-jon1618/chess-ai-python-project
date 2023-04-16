@@ -32,8 +32,23 @@ def initialize_chess_game():
 
             # Handling mouse click
             if event.type == pygame.MOUSEBUTTONDOWN:
-                selected_piece, pieces_array = handle_mouse_click(event, pieces_array, board, screen, selected_piece,
-                                                                  start_button, reset_button)
+                # Check if the start or reset button was clicked
+                if start_button.collidepoint(event.pos):
+                    print("Start button clicked")
+
+                elif reset_button.collidepoint(event.pos):
+                    print("Reset button clicked")
+                    # Clear the board and reset the game
+                    chess_board.reset_board(board)
+                    pieces_array = chess_piece.place_pieces_on_board(board, screen)
+                    selected_piece = None
+                    heuristic_score = 0
+                    additional_score = 0
+
+                else:
+                    # Handle regular piece selection
+                    selected_piece, pieces_array = handle_mouse_click(event, pieces_array, board, screen,
+                                                                      selected_piece)
 
         pygame.display.flip()
 

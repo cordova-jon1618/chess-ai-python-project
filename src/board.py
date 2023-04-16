@@ -29,3 +29,13 @@ class Board:
         pygame.display.flip()
 
         return board, screen
+
+    def reset_board(self, board_surface):
+        # Clear the board surface
+        board_surface.fill((255, 206, 158))
+
+        # Redraw the squares with the original colors
+        for x in range(0, 8, 2):
+            for y in range(0, 8, 2):
+                pygame.draw.rect(board_surface, (210, 180, 140), (x * 75, y * 75, 75, 75))
+                pygame.draw.rect(board_surface, (210, 180, 140), ((x + 1) * 75, (y + 1) * 75, 75, 75))
