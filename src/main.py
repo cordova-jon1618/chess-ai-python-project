@@ -4,6 +4,10 @@ from piece import Piece
 from movement import handle_mouse_click
 
 
+# Notes: We will not implement the following chess functionality
+# No two space move by pawns during their first move
+# No castling by King and Rook
+
 def main():
     chess_board = Board()
     board, screen = chess_board.make_board()
