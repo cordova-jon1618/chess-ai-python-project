@@ -7,6 +7,7 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
     # ------------------------------------------------------------
     mouse_x, mouse_y = event.pos
     grid_x, grid_y = (mouse_x - 20) // 75, (mouse_y - 20) // 75
+    # grid_x, grid_y = (mouse_x - 20) // 75, 7 - ((mouse_y - 20) // 75)
     chess_piece = Piece(None, None, None, None, None)
 
     # Left mouse click
@@ -16,7 +17,10 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
             for p in pieces_array:
                 if p.x == grid_x and p.y == grid_y:
                     selected_piece = p
-                    print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
+                    # Debugging
+                    # -------------------------------
+                    print_piece_info(selected_piece)
+                    # -------------------------------
                     chess_piece.redraw_pieces_on_board_with_green_highlight(pieces_array, board, screen,
                                                                             (grid_x, grid_y))
                     break
@@ -77,6 +81,12 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
 #     updated_pieces = [p for p in pieces_array if not (p.x == grid_x and p.y == grid_y)]
 #
 #     return updated_pieces
+
+def print_piece_info(p):
+    print("-----------------------------------------------")
+    print("This is the piece found to be moved. X=",
+          str(p.x) + " Y=" + str(p.y) + " color=" + p.color + " type=" + p.type + " value=" + str(p.value) + ". ")
+    print("-----------------------------------------------")
 
 
 def remove_piece_at_position(pieces_array, grid_x, grid_y, heuristic_score, additional_score):

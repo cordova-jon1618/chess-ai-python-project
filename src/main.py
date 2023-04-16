@@ -3,6 +3,7 @@ from board import Board
 from piece import Piece
 from movement import handle_mouse_click
 from game_logic import draw_ui_elements, update_UI_view
+from algorithm import start_algorithms
 
 
 # Notes: We will not implement the following chess functionality
@@ -36,6 +37,8 @@ def initialize_chess_game():
                 # Check if the start or reset button was clicked
                 if start_button.collidepoint(event.pos):
                     print("Start button clicked")
+                    # Here we will call the min-max algorithm with alpha-beta pruning.
+                    start_algorithms(pieces_array, board, screen, selected_piece, heuristic_score, additional_score)
 
                 elif reset_button.collidepoint(event.pos):
                     print("Reset button clicked")

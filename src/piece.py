@@ -14,6 +14,7 @@ class Piece:
     def draw(self, surface):
         img = pygame.image.load(f"img/{self.type}-{self.color}.png")
         surface.blit(img, (self.x * 75 + 10, self.y * 75 + 10))
+        # surface.blit(img, (self.y * 75 + 10, self.x * 75 + 10))
 
     def place_pieces_on_board(self, board, screen):
 
@@ -34,6 +35,8 @@ class Piece:
             # Adding pawns to initial positions
             black_pawn = Piece("black", i, 1, "pawn", -1 * PIECE_VALUES["pawn"])
             white_pawn = Piece("white", i, 6, "pawn", PIECE_VALUES["pawn"])
+            # black_pawn = Piece("black", i, 6, "pawn", -1 * PIECE_VALUES["pawn"])
+            # white_pawn = Piece("white", i, 1, "pawn", PIECE_VALUES["pawn"])
             pieces.extend([black_pawn, white_pawn])
             black_pieces.append(black_pawn)
             white_pieces.append(white_pawn)
@@ -42,6 +45,8 @@ class Piece:
         for i, piece_type in enumerate(["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]):
             black_piece = Piece("black", i, 0, piece_type, -1 * PIECE_VALUES[piece_type])
             white_piece = Piece("white", i, 7, piece_type, PIECE_VALUES[piece_type])
+            # black_piece = Piece("black", i, 7, piece_type, -1 * PIECE_VALUES[piece_type])
+            # white_piece = Piece("white", i, 0, piece_type, PIECE_VALUES[piece_type])
             pieces.extend([black_piece, white_piece])
             black_pieces.append(black_piece)
             white_pieces.append(white_piece)
@@ -66,6 +71,8 @@ class Piece:
             for y in range(0, 8, 2):
                 pygame.draw.rect(board, (210, 180, 140), (x * 75, y * 75, 75, 75))
                 pygame.draw.rect(board, (210, 180, 140), ((x + 1) * 75, (y + 1) * 75, 75, 75))
+                # pygame.draw.rect(board, (210, 180, 140), (y * 75, (7 - x) * 75, 75, 75))
+                # pygame.draw.rect(board, (210, 180, 140), ((y + 1) * 75, (7 - (x + 1)) * 75, 75, 75))
 
         for piece in pieces_array:
             piece.draw(board)
@@ -83,6 +90,8 @@ class Piece:
             for y in range(0, 8, 2):
                 pygame.draw.rect(board, (210, 180, 140), (x * 75, y * 75, 75, 75))
                 pygame.draw.rect(board, (210, 180, 140), ((x + 1) * 75, (y + 1) * 75, 75, 75))
+                # pygame.draw.rect(board, (210, 180, 140), (y * 75, (7 - x) * 75, 75, 75))
+                # pygame.draw.rect(board, (210, 180, 140), ((y + 1) * 75, (7 - (x + 1)) * 75, 75, 75))
 
         # Highlight the selected square with light green
         pygame.draw.rect(board, (180, 240, 180), (highlighted_square[0] * 75, highlighted_square[1] * 75, 75, 75))
