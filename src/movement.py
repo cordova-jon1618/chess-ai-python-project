@@ -2,6 +2,17 @@ import pygame
 from piece import Piece
 from game_logic import add_to_score
 
+
+def board_to_matrix(pieces_array):
+    board_matrix = [[' ' for _ in range(8)] for _ in range(8)]
+
+    for piece in pieces_array:
+        row, col = piece.y, piece.x  # Assuming y corresponds to rows and x to columns
+        board_matrix[row][col] = piece.type.upper() if piece.color == 'white' else piece.type.lower()
+
+    return board_matrix
+
+
 def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuristic_score, additional_score):
     # Board Only Mouse Controls
     # ------------------------------------------------------------
@@ -35,7 +46,9 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
                     print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
 
                 # Remove the existing piece at the target location
-                pieces_array, heuristic_score, additional_score = remove_piece_at_position(pieces_array, grid_x, grid_y, heuristic_score, additional_score)
+                pieces_array, heuristic_score, additional_score = remove_piece_at_position(pieces_array, grid_x, grid_y,
+                                                                                           heuristic_score,
+                                                                                           additional_score)
 
                 # Debugging
                 # --------------------------------
@@ -74,7 +87,10 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
         # Redraw the board
         chess_piece.redraw_pieces_on_board(pieces_array, board, screen)
 
-    return selected_piece, pieces_array, heuristic_score, additional_score
+    # Get the updated board matrix
+    board_matrix = board_to_matrix(pieces_array)
+
+    return selected_piece, pieces_array, heuristic_score, additional_score, board_matrix
 
 
 # def remove_piece_at_position(pieces_array, grid_x, grid_y, selected_piece):
