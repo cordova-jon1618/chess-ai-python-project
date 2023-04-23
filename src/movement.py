@@ -33,7 +33,7 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
                     print_piece_info(selected_piece)
                     # -------------------------------
                     redraw_pieces_on_board_with_green_highlight(pieces_array, board, screen,
-                                                                            (grid_x, grid_y))
+                                                                (grid_x, grid_y))
                     break
 
         else:
@@ -137,12 +137,41 @@ def is_valid_move(piece, target_x, target_y, pieces):
         if p.x == target_x and p.y == target_y and p.color == piece.color:
             return False
 
-        # Pawn movement
+    #     # Pawn movement
+    # if piece.type == "pawn":
+    #     if piece.color == "white":
+    #         return target_y == piece.y - 1 and target_x == piece.x
+    #     else:
+    #         return target_y == piece.y + 1 and target_x == piece.x
+    # Pawn movement
     if piece.type == "pawn":
         if piece.color == "white":
-            return target_y == piece.y - 1 and target_x == piece.x
+            # Check for the standard one-step move
+            if target_y == piece.y - 1 and target_x == piece.x and not any(p.x == target_x and p.y == target_y for p in pieces):
+                return True
+            # Check for the two-step move from the starting position
+            elif piece.y == 6 and target_y == piece.y - 2 and target_x == piece.x and not any(p.x == target_x and p.y == target_y for p in pieces) and not any(p.x == target_x and p.y == piece.y - 1 for p in pieces):
+                return True
+            # Check for captures
+            elif target_y == piece.y - 1 and abs(target_x - piece.x) == 1:
+                for p in pieces:
+                    if p.x == target_x and p.y == target_y and p.color != piece.color:
+                        return True
         else:
-            return target_y == piece.y + 1 and target_x == piece.x
+            # Check for the standard one-step move
+            if target_y == piece.y + 1 and target_x == piece.x and not any(p.x == target_x and p.y == target_y for p in pieces):
+                return True
+            # Check for the two-step move from the starting position
+            elif piece.y == 1 and target_y == piece.y + 2 and target_x == piece.x and not any(p.x == target_x and p.y == target_y for p in pieces) and not any(p.x == target_x and p.y == piece.y + 1 for p in pieces):
+                return True
+            # Check for captures
+            elif target_y == piece.y + 1 and abs(target_x - piece.x) == 1:
+                for p in pieces:
+                    if p.x == target_x and p.y == target_y and p.color != piece.color:
+                        return True
+
+        return False
+        # -------------------------------------------------------------------------------------------
 
         # Rook movement
     elif piece.type == "rook":

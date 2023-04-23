@@ -4,9 +4,8 @@ import pygame
 def draw_ui_elements(screen, heuristic_score, additional_score):
     font_name = "calibri"
     font = pygame.font.SysFont(font_name, 24)
-    # font = pygame.font.Font(None, 28)
-    bold_font = pygame.font.SysFont(font_name, 24)  # Create a separate font for bold text
-    bold_font.set_bold(True)  # Make the bold_font bold
+    bold_font = pygame.font.SysFont(font_name, 24)
+    bold_font.set_bold(True)
 
     start_button = pygame.Rect(50, 665, 100, 50)
     reset_button = pygame.Rect(200, 665, 100, 50)
@@ -35,16 +34,19 @@ def draw_ui_elements(screen, heuristic_score, additional_score):
     return start_button, reset_button
 
 
+def clear_scores(screen):
+    pygame.draw.rect(screen, (0, 0, 0), (375, 650, 250, 50))
+    pygame.draw.rect(screen, (0, 0, 0), (375, 680, 250, 50))
+
+
 def update_UI_view(screen, heuristic_score, additional_score):
     font_name = "calibri"
     font = pygame.font.SysFont(font_name, 24)
-    # font = pygame.font.Font(None, 28)
-    bold_font = pygame.font.SysFont(font_name, 24)  # Create a separate font for bold text
-    bold_font.set_bold(True)  # Make the bold_font bold
+    bold_font = pygame.font.SysFont(font_name, 24)
+    bold_font.set_bold(True)
 
     # Clear the area where the scores are displayed
-    pygame.draw.rect(screen, (0, 0, 0), (375, 650, 250, 50))
-    pygame.draw.rect(screen, (0, 0, 0), (375, 680, 250, 50))
+    clear_scores(screen)
 
     # Redraw the score text with the new values
     score_text = font.render(f"AI Heuristic Score: {heuristic_score}", True, (255, 255, 255))

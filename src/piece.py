@@ -20,12 +20,12 @@ class Piece:
 
         # Values of the chess pieces
         PIECE_VALUES = {
-            "pawn": 1,
-            "knight": 3,
-            "bishop": 3,
-            "rook": 5,
-            "queen": 9,
-            "king": 100,
+            "pawn": 1.0,
+            "knight": 3.0,
+            "bishop": 3.0,
+            "rook": 5.0,
+            "queen": 9.0,
+            "king": 100.0,
         }
 
         pieces = []
@@ -33,20 +33,18 @@ class Piece:
         black_pieces = []
         for row in range(8):
             # Adding pawns to initial positions
-            black_pawn = Piece("black", row, 1, "pawn", -1 * PIECE_VALUES["pawn"])
+            black_pawn = Piece("black", row, 1, "pawn", PIECE_VALUES["pawn"])
+            # white_pawn = Piece("white", row, 6, "pawn", -1 * PIECE_VALUES["pawn"])
             white_pawn = Piece("white", row, 6, "pawn", PIECE_VALUES["pawn"])
-            # black_pawn = Piece("black", row, 6, "pawn", -1 * PIECE_VALUES["pawn"])
-            # white_pawn = Piece("white", row, 1, "pawn", PIECE_VALUES["pawn"])
             pieces.extend([black_pawn, white_pawn])
             black_pieces.append(black_pawn)
             white_pieces.append(white_pawn)
 
         # Adding rooks, knights, bishops, queens, and kings to initial positions
         for col, piece_type in enumerate(["rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]):
-            black_piece = Piece("black", col, 0, piece_type, -1 * PIECE_VALUES[piece_type])
+            black_piece = Piece("black", col, 0, piece_type, PIECE_VALUES[piece_type])
+            # white_piece = Piece("white", col, 7, piece_type, -1 * PIECE_VALUES[piece_type])
             white_piece = Piece("white", col, 7, piece_type, PIECE_VALUES[piece_type])
-            # black_piece = Piece("black", col, 7, piece_type, -1 * PIECE_VALUES[piece_type])
-            # white_piece = Piece("white", col, 0, piece_type, PIECE_VALUES[piece_type])
             pieces.extend([black_piece, white_piece])
             black_pieces.append(black_piece)
             white_pieces.append(white_piece)

@@ -22,13 +22,14 @@ def initialize_chess_game():
     selected_piece = None
     heuristic_score = 0  # Initialize heuristic score
     additional_score = 0  # Initialize additional score
-    depth = 2  # Set the depth of the search tree
+    depth = 1  # Set the depth of the search tree
     player_color = "black"  # Set AI color (This should be set to "black")
 
     # Declare and initialize the board_matrix
     board_matrix = board_to_matrix(pieces_array)
 
     while running:
+
         start_button, reset_button = draw_ui_elements(screen, heuristic_score, additional_score)
 
         for event in pygame.event.get():
@@ -39,10 +40,16 @@ def initialize_chess_game():
 
             # Handling mouse click
             if event.type == pygame.MOUSEBUTTONDOWN:
+
+                # Round the scores to 2 decimal places
+                heuristic_score = round(heuristic_score, 1)
+                additional_score = round(additional_score, 1)
+
+
                 # Check if the start or reset button was clicked
                 if start_button.collidepoint(event.pos):
                     print("Start button clicked")
-                    best_move = find_best_move(board_matrix, depth, player_color, pieces_array)
+                    best_move, best_eval = find_best_move(board_matrix, depth, player_color, pieces_array)
                     print(f"Best move: ({best_move[0]}, {best_move[1]}) -> ({best_move[2]}, {best_move[3]})")
                     board = matrix_to_board(board_matrix)
 
@@ -69,6 +76,15 @@ def initialize_chess_game():
 
                     # Update UI WITHOUT the red highlight
                     redraw_pieces_on_board(pieces_array, board, screen)
+
+                    # Update Heuristic Score
+                    heuristic_score += best_eval
+
+                    # Round the scores to 2 decimal places
+                    heuristic_score = round(heuristic_score, 1)
+                    additional_score = round(additional_score, 1)
+
+                    # Update UI buttons and score
                     start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
 
 
@@ -96,7 +112,10 @@ def initialize_chess_game():
                     # ------------------------------------------------
                     # Print the updated board_matrix for debugging
                     # ------------------------------------------------
-                    print_board_matrix(board_matrix)
+                    # print_board_matrix(board_matrix)
+                    # Round the scores to 2 decimal places
+                    heuristic_score = round(heuristic_score, 1)
+                    additional_score = round(additional_score, 1)
 
                     # Update UI buttons
                     start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
@@ -104,11 +123,11 @@ def initialize_chess_game():
         pygame.display.flip()
 
 
-def print_board_matrix(board_matrix):
-    print("Current board matrix:")
-    for row in board_matrix:
-        print(row)
-    print()
+# def print_board_matrix(board_matrix):
+#     print("Current board matrix:")
+#     for row in board_matrix:
+#         print(row)
+#     print()
 
 
 def update_pieces_array(pieces_array, move):

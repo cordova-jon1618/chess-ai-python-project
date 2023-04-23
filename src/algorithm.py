@@ -1,6 +1,6 @@
 from movement import is_valid_move, remove_piece_at_position
 from piece import *
-
+import random
 
 def print_pieces_array(pieces):
     print("-----------------------------------------------")
@@ -21,13 +21,30 @@ def evaluate_board(board_matrix, color, pieces):
     score = 0
 
     # Evaluate material score
-    score += evaluate_material(board_matrix, color, pieces)
+    material_score = evaluate_material(board_matrix, color, pieces)
+    print(f"Material Score: {material_score}")
+    score += material_score
 
     # Evaluate mobility score
-    score += evaluate_mobility(board_matrix, color, pieces)
+    mobility_score = evaluate_mobility(board_matrix, color, pieces)
+    print(f"Mobility Score: {mobility_score}")
+    score += mobility_score
 
     # Evaluate control score
-    score += evaluate_control(board_matrix, color, pieces)
+    control_score = evaluate_control(board_matrix, color, pieces)
+    print(f"Control Score: {control_score}")
+    score += control_score
+
+    # Evaluate capture score
+    capture_score = evaluate_captures(board_matrix, color, pieces)
+    print(f"Capture Score: {capture_score}")
+    score += capture_score
+
+    # Adding a small random value to the score to prevent oscillating between two states
+    score += random.uniform(-0.5, 0.5)
+
+    # Round the score to 2 decimal places
+    score = round(score, 2)
 
     # Return the total evaluation score
     return score
@@ -35,22 +52,24 @@ def evaluate_board(board_matrix, color, pieces):
 
 def evaluate_material(board_matrix, color, pieces):
     evaluation = 0
+    material_weight = 1
 
     for row in board_matrix:
         for cell in row:
             if cell != " ":
                 piece = get_piece_by_position(cell[1], cell[0], pieces)
                 if piece is not None:
-                    if piece.type.islower() == (color == 'white'):
-                        evaluation += piece.value
+                    if piece.type.isupper() == (color == 'white'):
+                        evaluation -= piece.value * material_weight
                     else:
-                        evaluation -= piece.value
+                        evaluation += piece.value * material_weight
 
     return evaluation
 
 
 def evaluate_mobility(board_matrix, color, pieces):
     evaluation = 0
+    mobility_weight = 0.25
 
     # Get all possible moves for the given color
     moves = generate_moves(board_matrix, color, pieces)
@@ -61,15 +80,16 @@ def evaluate_mobility(board_matrix, color, pieces):
     # Add the move count to the evaluation score,
     # otherwise subtract it from the evaluation score
     if color == 'white':
-        evaluation += move_count
+        evaluation -= move_count * mobility_weight
     else:
-        evaluation -= move_count
+        evaluation += move_count * mobility_weight
 
     return evaluation
 
 
 def evaluate_control(board_matrix, color, pieces):
     evaluation = 0
+    control_weight = 0.5
 
     # Get the number of squares controlled by each color
     white_controlled_squares, black_controlled_squares = count_controlled_squares(board_matrix, pieces)
@@ -78,11 +98,49 @@ def evaluate_control(board_matrix, color, pieces):
     # controlled by white and black to the evaluation score,
     # otherwise subtract it from the evaluation score
     if color == 'white':
-        evaluation += (white_controlled_squares - black_controlled_squares)
+        evaluation -= (white_controlled_squares - black_controlled_squares) * control_weight
     else:
-        evaluation -= (white_controlled_squares - black_controlled_squares)
+        evaluation += (white_controlled_squares - black_controlled_squares) * control_weight
 
     return evaluation
+
+
+def evaluate_captures(board_matrix, color, pieces):
+    evaluation = 0
+    capture_weight = 1
+
+    # Get all possible moves for the given color
+    moves = generate_moves(board_matrix, color, pieces)
+
+    # Iterate through the moves and check for captures
+    for move in moves:
+        # Clear variables
+        target_cell = None
+        target_piece = None
+
+        source_col, source_row, target_col, target_row = move
+        target_cell = board_matrix[target_row][target_col]
+
+        # Add print statements for debugging
+        print("-----------------------------------------------")
+        print(f"Move: {move}, Target cell: {target_cell}")  # Print the move and the target cell
+        print(f"Target Row: {target_row}, Target Col: {target_col}")
+        print_board_matrix(board_matrix)
+
+        if target_cell != " ":
+            target_piece = get_piece_by_position(target_col, target_row, pieces)
+
+            if target_piece is not None:
+                # Add print statements for debugging
+                print(f"Target Piece: {target_piece.type}")
+                # if target_piece.type.isupper() != (color == 'white'):  # This condition checks for opponent's pieces
+                # Note: The target_piece.type will  not be uppercase only the information from the board_matrix
+                if target_cell.isupper():
+                    print("Captured piece is", target_cell)
+                    evaluation += target_piece.value
+                    print("Evaluation: ", evaluation)
+
+    return evaluation * capture_weight
 
 
 def count_controlled_squares(board_matrix, pieces):
@@ -135,10 +193,11 @@ def generate_piece_moves(board_matrix, col, row, pieces):
 
 def apply_move(board_matrix, move):
     start_row, start_col, end_row, end_col = move
-    piece = board_matrix[start_row][start_col]
-    board_matrix[end_row][end_col] = str(piece)
+    moving_piece = board_matrix[start_row][start_col]
+    captured_piece = board_matrix[end_row][end_col]  # Store the captured piece
+    board_matrix[end_row][end_col] = moving_piece
     board_matrix[start_row][start_col] = ' '
-    return piece
+    return captured_piece
 
 
 # The function reverses the move by moving the piece back to its original position
@@ -150,6 +209,40 @@ def unapply_move(board_matrix, move, captured_piece):
     return board_matrix
 
 
+# def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, pieces):
+#     if depth == 0:
+#         return evaluate_board(board_matrix, color, pieces)
+#
+#     moves = generate_moves(board_matrix, color, pieces)
+#
+#     if is_maximizing_player:
+#         max_eval = float('-inf')
+#         for move in moves:
+#             captured_piece = apply_move(board_matrix, move)
+#             # the depth -1 calls the evaluation function once it reaches depth of 0
+#             eval = minimax(board_matrix, depth - 1, False, alpha, beta, color, pieces)
+#             unapply_move(board_matrix, move, captured_piece)
+#             max_eval = max(max_eval, eval)
+#             alpha = max(alpha, eval)
+#             if beta <= alpha:
+#                 break
+#         # print("Max Eval:", max_eval)
+#         return max_eval
+#
+#     else:
+#         min_eval = float('inf')
+#         for move in moves:
+#             captured_piece = apply_move(board_matrix, move)
+#             # the depth -1 calls the evaluation function once it reaches depth of 0
+#             eval = minimax(board_matrix, depth - 1, True, alpha, beta, color, pieces)
+#             unapply_move(board_matrix, move, captured_piece)
+#             min_eval = min(min_eval, eval)
+#             beta = min(beta, eval)
+#             if beta <= alpha:
+#                 break
+#         # print("Min Eval:", min_eval)
+#         return min_eval
+
 def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, pieces):
     if depth == 0:
         return evaluate_board(board_matrix, color, pieces)
@@ -160,28 +253,27 @@ def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, piece
         max_eval = float('-inf')
         for move in moves:
             captured_piece = apply_move(board_matrix, move)
-            eval = minimax(board_matrix, depth - 1, False, alpha, beta, color, pieces)
+            opponent_color = 'white' if color == 'black' else 'black'
+            eval = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, pieces)
             unapply_move(board_matrix, move, captured_piece)
             max_eval = max(max_eval, eval)
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
-        print("Max Eval:", max_eval)
         return max_eval
 
     else:
         min_eval = float('inf')
         for move in moves:
             captured_piece = apply_move(board_matrix, move)
-            eval = minimax(board_matrix, depth - 1, True, alpha, beta, color, pieces)
+            opponent_color = 'white' if color == 'black' else 'black'
+            eval = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, pieces)
             unapply_move(board_matrix, move, captured_piece)
             min_eval = min(min_eval, eval)
             beta = min(beta, eval)
             if beta <= alpha:
                 break
-        print("Min Eval:", min_eval)
         return min_eval
-
 
 def find_best_move(board_matrix, depth, color, pieces):
     print("Find Best Move is running!")
@@ -193,7 +285,7 @@ def find_best_move(board_matrix, depth, color, pieces):
 
     for move in moves:
         captured_piece = apply_move(board_matrix, move)
-        eval = minimax(board_matrix, depth - 1, color != 'white', float('-inf'), float('inf'), color, pieces)
+        eval = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'), color, pieces)
         unapply_move(board_matrix, move, captured_piece)
 
         if color == 'white' and eval > best_eval:
@@ -205,7 +297,7 @@ def find_best_move(board_matrix, depth, color, pieces):
 
         print(f"Move {move} evaluated as {eval}")
 
-    return best_move
+    return best_move, best_eval
 
 
 def update_pieces_array(selected_piece, grid_x, grid_y, pieces_array, board, screen, heuristic_score, additional_score):
@@ -277,7 +369,6 @@ def heuristic_board_control(board_matrix, pieces):
 
 
 def is_controlled_square(board_matrix, x, y, color, pieces):
-
     opp_color = 'white' if color == 'black' else 'black'
     opp_pieces = [p for p in pieces if p.color == opp_color]
 
@@ -343,3 +434,10 @@ def is_valid_empty_square(board_matrix, x, y, pieces):
         return False
     if board_matrix[y][x] != ' ':
         return False
+
+
+def print_board_matrix(board_matrix):
+    print("Current board matrix:")
+    for row in board_matrix:
+        print(row)
+    print()
