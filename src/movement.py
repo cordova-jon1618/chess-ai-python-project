@@ -1,5 +1,5 @@
 import pygame
-from piece import Piece
+from piece import *
 from game_logic import add_to_score
 
 
@@ -19,7 +19,7 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
     mouse_x, mouse_y = event.pos
     grid_x, grid_y = (mouse_x - 20) // 75, (mouse_y - 20) // 75
     # grid_x, grid_y = (mouse_x - 20) // 75, 7 - ((mouse_y - 20) // 75)
-    chess_piece = Piece(None, None, None, None, None)
+    # chess_piece = Piece(None, None, None, None, None)
 
     # Left mouse click
     if event.button == 1:
@@ -32,7 +32,7 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
                     # -------------------------------
                     print_piece_info(selected_piece)
                     # -------------------------------
-                    chess_piece.redraw_pieces_on_board_with_green_highlight(pieces_array, board, screen,
+                    redraw_pieces_on_board_with_green_highlight(pieces_array, board, screen,
                                                                             (grid_x, grid_y))
                     break
 
@@ -71,7 +71,7 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
                 # --------------------------------
 
                 # Redraw the board with the updated pieces
-                chess_piece.redraw_pieces_on_board(pieces_array, board, screen)
+                redraw_pieces_on_board(pieces_array, board, screen)
 
                 # Debugging
                 # --------------------------------
@@ -85,7 +85,7 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
     elif event.button == 3:
         selected_piece = None
         # Redraw the board
-        chess_piece.redraw_pieces_on_board(pieces_array, board, screen)
+        redraw_pieces_on_board(pieces_array, board, screen)
 
     # Get the updated board matrix
     board_matrix = board_to_matrix(pieces_array)

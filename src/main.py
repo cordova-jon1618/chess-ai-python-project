@@ -1,8 +1,9 @@
 import pygame
-from board import Board
-from piece import Piece
-from movement import handle_mouse_click, board_to_matrix
-from game_logic import draw_ui_elements, update_UI_view
+from board import *
+from piece import *
+from movement import *
+from game_logic import *
+from algorithm import *
 
 
 # Notes: We will not implement the following chess functionality
@@ -21,6 +22,8 @@ def initialize_chess_game():
     selected_piece = None
     heuristic_score = 0  # Initialize heuristic score
     additional_score = 0  # Initialize additional score
+    depth = 2  # Set the depth of the search tree
+    player_color = "black"  # Set AI color (This should be set to "black")
 
     # Declare and initialize the board_matrix
     board_matrix = board_to_matrix(pieces_array)
@@ -39,6 +42,35 @@ def initialize_chess_game():
                 # Check if the start or reset button was clicked
                 if start_button.collidepoint(event.pos):
                     print("Start button clicked")
+                    best_move = find_best_move(board_matrix, depth, player_color, pieces_array)
+                    print(f"Best move: ({best_move[0]}, {best_move[1]}) -> ({best_move[2]}, {best_move[3]})")
+                    board = matrix_to_board(board_matrix)
+
+                    # Highlight the original position and best move with red
+                    highlighted_squares = [(best_move[0], best_move[1]), (best_move[2], best_move[3])]
+
+                    # Redraw the board and pieces with highlighted squares (Before Move)
+                    redraw_pieces_on_board_with_red_highlight(pieces_array, board, screen, highlighted_squares)
+                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+
+                    # Wait for some time
+                    pygame.time.delay(500)
+
+                    # Update the pieces_array and board_matrix after the move is made
+                    pieces_array = update_pieces_array(pieces_array, best_move)
+                    board_matrix = board_to_matrix(pieces_array)
+
+                    # Redraw the board and pieces with highlighted squares (After Move)
+                    redraw_pieces_on_board_with_red_highlight(pieces_array, board, screen, highlighted_squares)
+                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+
+                    # Wait for some time
+                    pygame.time.delay(500)
+
+                    # Update UI WITHOUT the red highlight
+                    redraw_pieces_on_board(pieces_array, board, screen)
+                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+
 
                 elif reset_button.collidepoint(event.pos):
                     print("Reset button clicked")
@@ -46,6 +78,10 @@ def initialize_chess_game():
                     chess_board.reset_board(board)
                     pieces_array, white_pieces_array, black_pieces_array = chess_piece.place_pieces_on_board(board,
                                                                                                              screen)
+
+                    # Reset the board_matrix based on the reset pieces_array
+                    board_matrix = board_to_matrix(pieces_array)
+
                     selected_piece = None
                     heuristic_score = 0
                     additional_score = 0
@@ -57,11 +93,12 @@ def initialize_chess_game():
                         event, pieces_array, board, screen,
                         selected_piece, heuristic_score, additional_score)
 
+                    # ------------------------------------------------
                     # Print the updated board_matrix for debugging
+                    # ------------------------------------------------
                     print_board_matrix(board_matrix)
 
-                    # Call the Minimax algorithm using the board_matrix as input
-
+                    # Update UI buttons
                     start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
 
         pygame.display.flip()
@@ -72,6 +109,22 @@ def print_board_matrix(board_matrix):
     for row in board_matrix:
         print(row)
     print()
+
+
+def update_pieces_array(pieces_array, move):
+    start_x, start_y, end_x, end_y = move
+
+    # Remove the existing piece at the target location
+    pieces_array, _, _ = remove_piece_at_position(pieces_array, end_x, end_y, 0, 0)
+
+    # Move the selected piece to the new location
+    for piece in pieces_array:
+        if piece.x == start_x and piece.y == start_y:
+            piece.x = end_x
+            piece.y = end_y
+            break
+
+    return pieces_array
 
 
 def main():
