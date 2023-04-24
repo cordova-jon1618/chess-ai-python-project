@@ -60,7 +60,7 @@ def evaluate_material(board_matrix, color, pieces):
                 piece = get_piece_by_position(cell[1], cell[0], pieces)
                 if piece is not None:
                     if piece.type.isupper() == (color == 'white'):
-                        evaluation -= piece.value * material_weight
+                        evaluation += piece.value * material_weight
                     else:
                         evaluation += piece.value * material_weight
 
@@ -69,7 +69,7 @@ def evaluate_material(board_matrix, color, pieces):
 
 def evaluate_mobility(board_matrix, color, pieces):
     evaluation = 0
-    mobility_weight = 0.25
+    mobility_weight = 0.05
 
     # Get all possible moves for the given color
     moves = generate_moves(board_matrix, color, pieces)
@@ -80,7 +80,7 @@ def evaluate_mobility(board_matrix, color, pieces):
     # Add the move count to the evaluation score,
     # otherwise subtract it from the evaluation score
     if color == 'white':
-        evaluation -= move_count * mobility_weight
+        evaluation += move_count * mobility_weight
     else:
         evaluation += move_count * mobility_weight
 
@@ -89,7 +89,7 @@ def evaluate_mobility(board_matrix, color, pieces):
 
 def evaluate_control(board_matrix, color, pieces):
     evaluation = 0
-    control_weight = 0.5
+    control_weight = 0.05
 
     # Get the number of squares controlled by each color
     white_controlled_squares, black_controlled_squares = count_controlled_squares(board_matrix, pieces)
@@ -98,7 +98,7 @@ def evaluate_control(board_matrix, color, pieces):
     # controlled by white and black to the evaluation score,
     # otherwise subtract it from the evaluation score
     if color == 'white':
-        evaluation -= (white_controlled_squares - black_controlled_squares) * control_weight
+        evaluation += (white_controlled_squares - black_controlled_squares) * control_weight
     else:
         evaluation += (white_controlled_squares - black_controlled_squares) * control_weight
 
@@ -114,31 +114,44 @@ def evaluate_captures(board_matrix, color, pieces):
 
     # Iterate through the moves and check for captures
     for move in moves:
+
+        print("-----------------------------------------------")
+
         # Clear variables
         target_cell = None
         target_piece = None
 
         source_col, source_row, target_col, target_row = move
+
         target_cell = board_matrix[target_row][target_col]
+        source_cell = board_matrix[source_row][source_col]
 
         # Add print statements for debugging
-        print("-----------------------------------------------")
         print(f"Move: {move}, Target cell: {target_cell}")  # Print the move and the target cell
+        print(f"Source Row: {source_row}, Source Col: {source_col}")
         print(f"Target Row: {target_row}, Target Col: {target_col}")
         print_board_matrix(board_matrix)
 
+        if source_cell != " ":
+            source_piece = get_piece_by_position(source_col, source_row, pieces)
+            if source_piece is not None:
+                # Add print statements for debugging
+                print(f"Source Piece: {source_piece.type}")
+
         if target_cell != " ":
             target_piece = get_piece_by_position(target_col, target_row, pieces)
-
             if target_piece is not None:
                 # Add print statements for debugging
                 print(f"Target Piece: {target_piece.type}")
+
                 # if target_piece.type.isupper() != (color == 'white'):  # This condition checks for opponent's pieces
                 # Note: The target_piece.type will  not be uppercase only the information from the board_matrix
                 if target_cell.isupper():
                     print("Captured piece is", target_cell)
                     evaluation += target_piece.value
                     print("Evaluation: ", evaluation)
+
+        print("-----------------------------------------------")
 
     return evaluation * capture_weight
 
