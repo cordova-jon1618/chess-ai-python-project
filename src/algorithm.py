@@ -204,13 +204,21 @@ def generate_piece_moves(board_matrix, col, row, pieces):
     return moves
 
 
+# def apply_move(board_matrix, move):
+#     start_row, start_col, end_row, end_col = move
+#     moving_piece = board_matrix[start_row][start_col]
+#     captured_piece = board_matrix[end_row][end_col]  # Store the captured piece
+#     board_matrix[end_row][end_col] = moving_piece
+#     board_matrix[start_row][start_col] = ' '
+#     return captured_piece
+
 def apply_move(board_matrix, move):
     start_row, start_col, end_row, end_col = move
     moving_piece = board_matrix[start_row][start_col]
     captured_piece = board_matrix[end_row][end_col]  # Store the captured piece
     board_matrix[end_row][end_col] = moving_piece
     board_matrix[start_row][start_col] = ' '
-    return captured_piece
+    return captured_piece, board_matrix
 
 
 # The function reverses the move by moving the piece back to its original position
@@ -256,38 +264,98 @@ def unapply_move(board_matrix, move, captured_piece):
 #         # print("Min Eval:", min_eval)
 #         return min_eval
 
+# def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, pieces):
+#     if depth == 0:
+#         return evaluate_board(board_matrix, color, pieces)
+#
+#     moves = generate_moves(board_matrix, color, pieces)
+#
+#     if is_maximizing_player:
+#         max_eval = float('-inf')
+#         for move in moves:
+#             captured_piece = apply_move(board_matrix, move)
+#             opponent_color = 'white' if color == 'black' else 'black'
+#             eval = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, pieces)
+#             unapply_move(board_matrix, move, captured_piece)
+#             max_eval = max(max_eval, eval)
+#             alpha = max(alpha, eval)
+#             if beta <= alpha:
+#                 break
+#         return max_eval
+#
+#     else:
+#         min_eval = float('inf')
+#         for move in moves:
+#             captured_piece = apply_move(board_matrix, move)
+#             opponent_color = 'white' if color == 'black' else 'black'
+#             eval = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, pieces)
+#             unapply_move(board_matrix, move, captured_piece)
+#             min_eval = min(min_eval, eval)
+#             beta = min(beta, eval)
+#             if beta <= alpha:
+#                 break
+#         return min_eval
+
 def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, pieces):
     if depth == 0:
-        return evaluate_board(board_matrix, color, pieces)
+        return evaluate_board(board_matrix, color, pieces), None
 
     moves = generate_moves(board_matrix, color, pieces)
+    best_move = None
 
     if is_maximizing_player:
         max_eval = float('-inf')
         for move in moves:
-            captured_piece = apply_move(board_matrix, move)
+            captured_piece, board_matrix = apply_move(board_matrix, move)
             opponent_color = 'white' if color == 'black' else 'black'
-            eval = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, pieces)
-            unapply_move(board_matrix, move, captured_piece)
-            max_eval = max(max_eval, eval)
+            eval, _ = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, pieces)
+            board_matrix = unapply_move(board_matrix, move, captured_piece)
+            if eval > max_eval:
+                max_eval = eval
+                best_move = move
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
-        return max_eval
+        return max_eval, best_move
 
     else:
         min_eval = float('inf')
         for move in moves:
-            captured_piece = apply_move(board_matrix, move)
+            captured_piece, board_matrix = apply_move(board_matrix, move)
             opponent_color = 'white' if color == 'black' else 'black'
-            eval = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, pieces)
-            unapply_move(board_matrix, move, captured_piece)
-            min_eval = min(min_eval, eval)
+            eval, _ = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, pieces)
+            board_matrix = unapply_move(board_matrix, move, captured_piece)
+            if eval < min_eval:
+                min_eval = eval
+                best_move = move
             beta = min(beta, eval)
             if beta <= alpha:
                 break
-        return min_eval
+        return min_eval, best_move
 
+# def find_best_move(board_matrix, depth, color, pieces):
+#     print("Find Best Move is running!")
+#     best_move = None
+#     best_eval = float('-inf') if color == 'white' else float('inf')
+#
+#     moves = generate_moves(board_matrix, color, pieces)
+#     print("Generated Moves:", moves)
+#
+#     for move in moves:
+#         captured_piece = apply_move(board_matrix, move)
+#         eval = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'), color, pieces)
+#         unapply_move(board_matrix, move, captured_piece)
+#
+#         if color == 'white' and eval > best_eval:
+#             best_move = move
+#             best_eval = eval
+#         elif color == 'black' and eval < best_eval:
+#             best_move = move
+#             best_eval = eval
+#
+#         print(f"Move {move} evaluated as {eval}")
+#
+#     return best_move, best_eval
 def find_best_move(board_matrix, depth, color, pieces):
     print("Find Best Move is running!")
     best_move = None
@@ -297,9 +365,9 @@ def find_best_move(board_matrix, depth, color, pieces):
     print("Generated Moves:", moves)
 
     for move in moves:
-        captured_piece = apply_move(board_matrix, move)
-        eval = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'), color, pieces)
-        unapply_move(board_matrix, move, captured_piece)
+        captured_piece, board_matrix = apply_move(board_matrix, move)
+        eval, _ = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'), color, pieces)
+        board_matrix = unapply_move(board_matrix, move, captured_piece)
 
         if color == 'white' and eval > best_eval:
             best_move = move
@@ -311,7 +379,6 @@ def find_best_move(board_matrix, depth, color, pieces):
         print(f"Move {move} evaluated as {eval}")
 
     return best_move, best_eval
-
 
 def update_pieces_array(selected_piece, grid_x, grid_y, pieces_array, board, screen, heuristic_score, additional_score):
     if selected_piece is None:
