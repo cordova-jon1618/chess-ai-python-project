@@ -17,6 +17,7 @@ def print_piece_info(p):
 
 
 def evaluate_board(board_matrix, color, pieces):
+    print("--------- DEBUG: Inside evaluate_board() -----------------")
     # Initialize the total evaluation score
     score = 0
 
@@ -46,11 +47,13 @@ def evaluate_board(board_matrix, color, pieces):
     # Round the score to 2 decimal places
     score = round(score, 2)
 
+    print("--------- DEBUG: Ending evaluate_board() -----------------")
     # Return the total evaluation score
     return score
 
 
 def evaluate_material(board_matrix, color, pieces):
+    # print("--------- DEBUG: Inside evaluate_material() -----------------")
     evaluation = 0
     material_weight = 1
 
@@ -64,10 +67,12 @@ def evaluate_material(board_matrix, color, pieces):
                     else:
                         evaluation += piece.value * material_weight
 
+    # print("--------- DEBUG: Ending evaluate_material() -----------------")
     return evaluation
 
 
 def evaluate_mobility(board_matrix, color, pieces):
+    # print("--------- DEBUG: Inside evaluate_mobility() -----------------")
     evaluation = 0
     mobility_weight = 0.05
 
@@ -84,10 +89,12 @@ def evaluate_mobility(board_matrix, color, pieces):
     else:
         evaluation += move_count * mobility_weight
 
+    # print("--------- DEBUG: Ending evaluate_mobility() -----------------")
     return evaluation
 
 
 def evaluate_control(board_matrix, color, pieces):
+    # print("--------- DEBUG: Inside evaluate_control() -----------------")
     evaluation = 0
     control_weight = 0.05
 
@@ -102,10 +109,12 @@ def evaluate_control(board_matrix, color, pieces):
     else:
         evaluation += (white_controlled_squares - black_controlled_squares) * control_weight
 
+    # print("--------- DEBUG: Ending evaluate_control() -----------------")
     return evaluation
 
 
 def evaluate_captures(board_matrix, color, pieces):
+    # print("--------- DEBUG: Inside evaluate_captures() -----------------")
     evaluation = 0
     capture_weight = 1
 
@@ -116,7 +125,6 @@ def evaluate_captures(board_matrix, color, pieces):
     for move in moves:
 
         print("-----------------------------------------------")
-
         # Clear variables
         target_cell = None
         target_piece = None
@@ -153,10 +161,12 @@ def evaluate_captures(board_matrix, color, pieces):
 
         print("-----------------------------------------------")
 
+    # print("--------- DEBUG: Ending evaluate_captures() -----------------")
     return evaluation * capture_weight
 
 
 def count_controlled_squares(board_matrix, pieces):
+    # print("--------- DEBUG: Inside count_controlled_squares() -----------------")
     white_controlled_squares = 0
     black_controlled_squares = 0
 
@@ -167,17 +177,23 @@ def count_controlled_squares(board_matrix, pieces):
             elif is_controlled_square(board_matrix, col, row, 'black', pieces):
                 black_controlled_squares += 1
 
+    # print("--------- DEBUG: Ending count_controlled_squares() -----------------")
     return white_controlled_squares, black_controlled_squares
 
 
 def get_piece_by_position(x, y, pieces):
+    # print("--------- DEBUG: Inside get_piece_by_position() -----------------")
     for piece in pieces:
         if piece.x == x and piece.y == y:
+            # print("--------- DEBUG: Ending get_piece_by_position() -----------------")
             return piece
+
+    # print("--------- DEBUG: Ending get_piece_by_position() -----------------")
     return None
 
 
 def generate_moves(board_matrix, color, pieces):
+    print("--------- DEBUG: Inside generate_moves() -----------------")
     moves = []
     for col in range(8):
         for row in range(8):
@@ -185,10 +201,13 @@ def generate_moves(board_matrix, color, pieces):
             if piece_symbol != ' ' and (piece_symbol.islower() == (color == 'black')):
                 piece_moves = generate_piece_moves(board_matrix, col, row, pieces)
                 moves.extend(piece_moves)
+
+    print(f"--------- DEBUG: Ending generate_moves() -----------------")
     return moves
 
 
 def generate_piece_moves(board_matrix, col, row, pieces):
+    # print("--------- DEBUG: Inside generate_piece_moves() -----------------")
     piece_symbol = board_matrix[row][col]
     color = 'white' if piece_symbol.isupper() else 'black'
     piece_type = piece_symbol.lower()
@@ -201,24 +220,31 @@ def generate_piece_moves(board_matrix, col, row, pieces):
             if is_valid_move(piece, target_col, target_row, pieces):
                 moves.append((col, row, target_col, target_row))
 
+    # print("--------- DEBUG: Ending generate_piece_moves() -----------------")
     return moves
 
 
 def apply_move(board_matrix, move):
+    print("--------- DEBUG: Inside apply_move() -----------------")
     start_row, start_col, end_row, end_col = move
     moving_piece = board_matrix[start_row][start_col]
     captured_piece = board_matrix[end_row][end_col]  # Store the captured piece
     board_matrix[end_row][end_col] = moving_piece
     board_matrix[start_row][start_col] = ' '
+
+    print("--------- DEBUG: Ending apply_move() -----------------")
     return captured_piece
 
 
 # The function reverses the move by moving the piece back to its original position
 # used for calculating reversing possible states when building minimax tree
 def unapply_move(board_matrix, move, captured_piece):
+    print("--------- DEBUG: Inside unapply_move() -----------------")
     start_row, start_col, end_row, end_col = move
     board_matrix[start_row][start_col] = board_matrix[end_row][end_col]
     board_matrix[end_row][end_col] = captured_piece
+    print("--------- DEBUG: Ending unapply_move() -----------------")
+
     return board_matrix
 
 
@@ -257,6 +283,7 @@ def unapply_move(board_matrix, move, captured_piece):
 #         return min_eval
 
 def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, pieces):
+    print("--------- DEBUG: Inside minimax() -----------------")
     if depth == 0:
         return evaluate_board(board_matrix, color, pieces)
 
@@ -273,6 +300,8 @@ def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, piece
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
+
+        print("--------- DEBUG: Ending minimax() -----------------")
         return max_eval
 
     else:
@@ -286,10 +315,13 @@ def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, piece
             beta = min(beta, eval)
             if beta <= alpha:
                 break
+
+        print("--------- DEBUG: Ending minimax() -----------------")
         return min_eval
 
+
 def find_best_move(board_matrix, depth, color, pieces):
-    print("Find Best Move is running!")
+    print("--------- DEBUG: Inside find_best_move()-----------------")
     best_move = None
     best_eval = float('-inf') if color == 'white' else float('inf')
 
@@ -310,6 +342,7 @@ def find_best_move(board_matrix, depth, color, pieces):
 
         print(f"Move {move} evaluated as {eval}")
 
+    print("--------- DEBUG: Ending find_best_move()-----------------")
     return best_move, best_eval
 
 
