@@ -46,9 +46,8 @@ def handle_mouse_click(event, pieces_array, board, screen, selected_piece, heuri
                     print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
 
                 # Remove the existing piece at the target location
-                pieces_array, heuristic_score, additional_score = remove_piece_at_position(pieces_array, grid_x, grid_y,
-                                                                                           heuristic_score,
-                                                                                           additional_score)
+                # pieces_array, heuristic_score, additional_score = remove_piece_at_position(pieces_array, grid_x, grid_y, heuristic_score, additional_score)
+                pieces_array, _, _ = remove_piece_at_position(pieces_array, grid_x, grid_y, heuristic_score, additional_score)
 
                 # Debugging
                 # --------------------------------

@@ -320,7 +320,7 @@ def find_best_move(board_matrix, depth, color, pieces):
     print(f"Move {move} total evaluated as {total_eval}")
 
     print("--------- DEBUG: Ending find_best_move()-----------------")
-    return best_move, best_eval
+    return best_move, best_eval, best_short_term_eval, best_long_term_eval
 
 
 

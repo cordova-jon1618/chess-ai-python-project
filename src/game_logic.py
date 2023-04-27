@@ -13,8 +13,8 @@ def draw_ui_elements(screen, heuristic_score, additional_score):
     start_text = bold_font.render("Start", True, (255, 255, 255))
     reset_text = bold_font.render("Reset", True, (255, 255, 255))
 
-    score_text = font.render(f"AI Heuristic Score: {heuristic_score}", True, (255, 255, 255))
-    additional_score_text = font.render(f"My Heuristic Score: {additional_score}", True, (255, 255, 255))
+    score_text = font.render(f"AI Short-Term Heuristic: {heuristic_score}", True, (255, 255, 255))
+    additional_score_text = font.render(f"AI Long-Term Heuristic: {additional_score}", True, (255, 255, 255))
 
     # pygame.draw.rect(screen, (0, 255, 0), start_button)
     pygame.draw.rect(screen, (80, 240, 180), start_button)
@@ -28,8 +28,8 @@ def draw_ui_elements(screen, heuristic_score, additional_score):
 
     screen.blit(start_text, (start_text_x, start_text_y))
     screen.blit(reset_text, (reset_text_x, reset_text_y))
-    screen.blit(score_text, (375, 650))
-    screen.blit(additional_score_text, (375, 680))
+    screen.blit(score_text, (325, 650))
+    screen.blit(additional_score_text, (325, 680))
 
     return start_button, reset_button
 
@@ -49,10 +49,10 @@ def update_UI_view(screen, heuristic_score, additional_score):
     clear_scores(screen)
 
     # Redraw the score text with the new values
-    score_text = font.render(f"AI Heuristic Score: {heuristic_score}", True, (255, 255, 255))
-    additional_score_text = font.render(f"My Heuristic Score: {additional_score}", True, (255, 255, 255))
-    screen.blit(score_text, (375, 650))
-    screen.blit(additional_score_text, (375, 680))
+    score_text = font.render(f"AI Short-Term Heuristic: {heuristic_score}", True, (255, 255, 255))
+    additional_score_text = font.render(f"AI Long-Term Heuristic: {additional_score}", True, (255, 255, 255))
+    screen.blit(score_text, (325, 650))
+    screen.blit(additional_score_text, (325, 680))
 
     # Redraw the UI buttons
     start_button, reset_button = draw_ui_elements(screen, heuristic_score, additional_score)

@@ -25,12 +25,16 @@ def initialize_chess_game():
     depth = 3  # Set the depth of the search tree
     player_color = "black"  # Set AI color (This should be set to "black")
 
+    short_term_heuristic = 0  # Initialize ST heuristic score
+    long_term_heuristic = 0  # Initialize LT heuristic score
+
     # Declare and initialize the board_matrix
     board_matrix = board_to_matrix(pieces_array)
 
     while running:
 
-        start_button, reset_button = draw_ui_elements(screen, heuristic_score, additional_score)
+        # start_button, reset_button = draw_ui_elements(screen, heuristic_score, additional_score)
+        start_button, reset_button = draw_ui_elements(screen, short_term_heuristic, long_term_heuristic)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -42,14 +46,15 @@ def initialize_chess_game():
             if event.type == pygame.MOUSEBUTTONDOWN:
 
                 # Round the scores to 2 decimal places
-                heuristic_score = round(heuristic_score, 1)
-                additional_score = round(additional_score, 1)
-
+                # heuristic_score = round(heuristic_score, 1)
+                # additional_score = round(additional_score, 1)
+                short_term_heuristic = round(short_term_heuristic, 1)
+                long_term_heuristic = round(long_term_heuristic, 1)
 
                 # Check if the start or reset button was clicked
                 if start_button.collidepoint(event.pos):
                     print("Start button clicked")
-                    best_move, best_eval = find_best_move(board_matrix, depth, player_color, pieces_array)
+                    best_move, best_eval, short_term_heuristic, long_term_heuristic = find_best_move(board_matrix, depth, player_color, pieces_array)
                     print(f"Best move: ({best_move[0]}, {best_move[1]}) -> ({best_move[2]}, {best_move[3]})")
                     print("Best eval:", best_eval)
                     board = matrix_to_board(board_matrix)
@@ -59,7 +64,8 @@ def initialize_chess_game():
 
                     # Redraw the board and pieces with highlighted squares (Before Move)
                     redraw_pieces_on_board_with_red_highlight(pieces_array, board, screen, highlighted_squares)
-                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
                     # Wait for some time
                     pygame.time.delay(500)
@@ -70,7 +76,8 @@ def initialize_chess_game():
 
                     # Redraw the board and pieces with highlighted squares (After Move)
                     redraw_pieces_on_board_with_red_highlight(pieces_array, board, screen, highlighted_squares)
-                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
                     # Wait for some time
                     pygame.time.delay(500)
@@ -79,14 +86,15 @@ def initialize_chess_game():
                     redraw_pieces_on_board(pieces_array, board, screen)
 
                     # Update Heuristic Score
-                    heuristic_score += best_eval
+                    # heuristic_score += best_eval
 
                     # Round the scores to 2 decimal places
-                    heuristic_score = round(heuristic_score, 1)
-                    additional_score = round(additional_score, 1)
+                    # heuristic_score = round(heuristic_score, 1)
+                    # additional_score = round(additional_score, 1)
 
                     # Update UI buttons and score
-                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
 
                 elif reset_button.collidepoint(event.pos):
@@ -102,24 +110,33 @@ def initialize_chess_game():
                     selected_piece = None
                     heuristic_score = 0
                     additional_score = 0
-                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    short_term_heuristic = 0
+                    long_term_heuristic = 0
+                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
                 else:
                     # Handle piece mouse click events
-                    selected_piece, pieces_array, heuristic_score, additional_score, board_matrix = handle_mouse_click(
-                        event, pieces_array, board, screen,
-                        selected_piece, heuristic_score, additional_score)
+
+                    short_term_heuristic = 0
+                    long_term_heuristic = 0
+
+                    # selected_piece, pieces_array, heuristic_score, additional_score, board_matrix = handle_mouse_click(
+                    #     event, pieces_array, board, screen,
+                    #     selected_piece, heuristic_score, additional_score)
+                    selected_piece, pieces_array, short_term_heuristic, long_term_heuristic, board_matrix = handle_mouse_click(event, pieces_array, board, screen, selected_piece, short_term_heuristic, long_term_heuristic)
 
                     # ------------------------------------------------
                     # Print the updated board_matrix for debugging
                     # ------------------------------------------------
                     # print_board_matrix(board_matrix)
                     # Round the scores to 2 decimal places
-                    heuristic_score = round(heuristic_score, 1)
-                    additional_score = round(additional_score, 1)
+                    # heuristic_score = round(heuristic_score, 1)
+                    # additional_score = round(additional_score, 1)
 
                     # Update UI buttons
-                    start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+                    start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
         pygame.display.flip()
 
