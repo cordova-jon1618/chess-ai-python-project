@@ -32,21 +32,21 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
     # print(f"Mobility Score: {mobility_score}")
     # score += mobility_score
     #
-    # # Evaluate control score
-    # control_score = evaluate_control(board_matrix, color, pieces)
-    # print(f"Control Score: {control_score}")
-    # score += control_score
+    # Evaluate control score
+    control_score = evaluate_control(board_matrix, color, pieces)
+    print(f"Control Score: {control_score}")
+    score += control_score
 
     # Evaluate capture score
-    capture_score = evaluate_captures(board_matrix, color, move, pieces, captured_piece)
-    print(f"Capture Score: {capture_score}")
-    score += capture_score
+    # capture_score = evaluate_captures(board_matrix, color, move, pieces, captured_piece)
+    # print(f"Capture Score: {capture_score}")
+    # score += capture_score
 
     # Adding a small random value to the score to prevent oscillating between two states
     # score += random.uniform(-0.5, 0.5)
 
     # Round the score to 2 decimal places
-    # score = round(score, 2)
+    score = round(score, 1)
 
     print("--------- DEBUG: Ending evaluate_board() -----------------", score)
     # Return the total evaluation score
@@ -64,20 +64,20 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
 #     return score
 
 
-def evaluate_material(board_matrix, color, pieces):
-    evaluation = 0
-    material_weight = 1
-
-    for row in board_matrix:
-        for cell in row:
-            if cell != " ":
-                piece = get_piece_by_position(cell[1], cell[0], pieces)
-                if piece is not None:
-                    if piece.type.isupper() == (color == 'white'):
-                        evaluation += piece.value * material_weight
-                    else:
-                        evaluation -= piece.value * material_weight
-    return evaluation
+# def evaluate_material(board_matrix, color, pieces):
+#     evaluation = 0
+#     material_weight = 1
+#
+#     for row in board_matrix:
+#         for cell in row:
+#             if cell != " ":
+#                 piece = get_piece_by_position(cell[1], cell[0], pieces)
+#                 if piece is not None:
+#                     if piece.type.isupper() == (color == 'white'):
+#                         evaluation += piece.value * material_weight
+#                     else:
+#                         evaluation -= piece.value * material_weight
+#     return evaluation
 
 
 def evaluate_mobility(board_matrix, color, pieces):
@@ -97,7 +97,7 @@ def evaluate_mobility(board_matrix, color, pieces):
 
 def evaluate_control(board_matrix, color, pieces):
     evaluation = 0
-    control_weight = 0.05
+    control_weight = 1
 
     white_controlled_squares, black_controlled_squares = count_controlled_squares(board_matrix, pieces)
 
@@ -339,45 +339,45 @@ def find_best_move(board_matrix, depth, color, pieces):
     return best_move, best_eval, best_short_term_eval, best_long_term_eval
 
 
-def update_pieces_array(selected_piece, grid_x, grid_y, pieces_array, board, screen, heuristic_score, additional_score):
-    if selected_piece is None:
-        print("Selected Piece is: ", selected_piece)
-        for p in pieces_array:
-            if p.x == grid_x and p.y == grid_y:
-                selected_piece = p
-                print_piece_info(selected_piece)
-                redraw_pieces_on_board_with_green_highlight(pieces_array, board, screen, (grid_x, grid_y))
-                break
-    else:
-        if selected_piece is not None:
-            print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
-
-        if is_valid_move(selected_piece, grid_x, grid_y, pieces_array):
-
-            if selected_piece is not None:
-                print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
-
-            # Remove the existing piece at the target location
-            pieces_array, heuristic_score, additional_score = remove_piece_at_position(pieces_array, grid_x, grid_y,
-                                                                                       heuristic_score,
-                                                                                       additional_score)
-
-            # Move the selected piece to the new location
-            selected_piece.x = grid_x
-            selected_piece.y = grid_y
-
-            # Update the selected_piece in the pieces list
-            for i, p in enumerate(pieces_array):
-                if p == selected_piece:
-                    pieces_array[i] = selected_piece
-                    break
-
-            # Redraw the board with the updated pieces
-            redraw_pieces_on_board(pieces_array, board, screen)
-
-            return pieces_array, heuristic_score, additional_score
-
-    return selected_piece, pieces_array, heuristic_score, additional_score
+# def update_pieces_array(selected_piece, grid_x, grid_y, pieces_array, board, screen, heuristic_score, additional_score):
+#     if selected_piece is None:
+#         print("Selected Piece is: ", selected_piece)
+#         for p in pieces_array:
+#             if p.x == grid_x and p.y == grid_y:
+#                 selected_piece = p
+#                 print_piece_info(selected_piece)
+#                 redraw_pieces_on_board_with_green_highlight(pieces_array, board, screen, (grid_x, grid_y))
+#                 break
+#     else:
+#         if selected_piece is not None:
+#             print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
+#
+#         if is_valid_move(selected_piece, grid_x, grid_y, pieces_array):
+#
+#             if selected_piece is not None:
+#                 print("Current Selected Piece is: ", selected_piece.color + selected_piece.type)
+#
+#             # Remove the existing piece at the target location
+#             pieces_array, heuristic_score, additional_score = remove_piece_at_position(pieces_array, grid_x, grid_y,
+#                                                                                        heuristic_score,
+#                                                                                        additional_score)
+#
+#             # Move the selected piece to the new location
+#             selected_piece.x = grid_x
+#             selected_piece.y = grid_y
+#
+#             # Update the selected_piece in the pieces list
+#             for i, p in enumerate(pieces_array):
+#                 if p == selected_piece:
+#                     pieces_array[i] = selected_piece
+#                     break
+#
+#             # Redraw the board with the updated pieces
+#             redraw_pieces_on_board(pieces_array, board, screen)
+#
+#             return pieces_array, heuristic_score, additional_score
+#
+#     return selected_piece, pieces_array, heuristic_score, additional_score
 
 
 def heuristic_board_control(board_matrix, pieces):
