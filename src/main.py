@@ -7,9 +7,8 @@ from algorithm import *
 
 
 # Notes: We will not implement the following chess functionality
-# No two space move by pawns during their first move
 # No castling by King and Rook
-
+# No winning conditions as this project is to show the AI Chess functionality
 
 def initialize_chess_game():
     chess_board = Board()
@@ -20,8 +19,8 @@ def initialize_chess_game():
 
     running = True
     selected_piece = None
-    heuristic_score = 0  # Initialize heuristic score
-    additional_score = 0  # Initialize additional score
+    # heuristic_score = 0  # Initialize heuristic score
+    # additional_score = 0  # Initialize additional score
     depth = 3  # Set the depth of the search tree
     player_color = "black"  # Set AI color (This should be set to "black")
 
