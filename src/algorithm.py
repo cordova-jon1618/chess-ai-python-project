@@ -27,15 +27,15 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
     # print(f"Material Score: {material_score}")
     # score += material_score
     #
-    # # Evaluate mobility score
-    # mobility_score = evaluate_mobility(board_matrix, color, pieces)
-    # print(f"Mobility Score: {mobility_score}")
-    # score += mobility_score
+    # Evaluate mobility score
+    mobility_score = evaluate_mobility(board_matrix, color, pieces)
+    print(f"Mobility Score: {mobility_score}")
+    score += mobility_score
     #
     # Evaluate control score
-    control_score = evaluate_control(board_matrix, color, pieces)
-    print(f"Control Score: {control_score}")
-    score += control_score
+    # control_score = evaluate_control(board_matrix, color, pieces)
+    # print(f"Control Score: {control_score}")
+    # score += control_score
 
     # Evaluate capture score
     # capture_score = evaluate_captures(board_matrix, color, move, pieces, captured_piece)
@@ -51,17 +51,6 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
     print("--------- DEBUG: Ending evaluate_board() -----------------", score)
     # Return the total evaluation score
     return score
-
-
-# def evaluate_board(board_matrix, color, move, pieces):
-#     score = 0
-#
-#     # Evaluate capture score
-#     capture_score = evaluate_captures(board_matrix, color, move, pieces)
-#     print(f"Capture Score: {capture_score}")
-#     score += capture_score
-#
-#     return score
 
 
 # def evaluate_material(board_matrix, color, pieces):
@@ -80,6 +69,7 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
 #     return evaluation
 
 
+# This function sums up all the possible moves for the color. A weight is added to decrease the influence.
 def evaluate_mobility(board_matrix, color, pieces):
     evaluation = 0
     mobility_weight = 0.05
@@ -89,24 +79,24 @@ def evaluate_mobility(board_matrix, color, pieces):
 
     if color == 'white':
         evaluation += move_count * mobility_weight
-    else:
-        evaluation -= move_count * mobility_weight
-
-    return evaluation
-
-
-def evaluate_control(board_matrix, color, pieces):
-    evaluation = 0
-    control_weight = 1
-
-    white_controlled_squares, black_controlled_squares = count_controlled_squares(board_matrix, pieces)
-
-    if color == 'white':
-        evaluation += (white_controlled_squares - black_controlled_squares) * control_weight
     elif color == 'black':
-        evaluation += (black_controlled_squares - white_controlled_squares) * control_weight
+        evaluation += move_count * mobility_weight
 
     return evaluation
+#
+#
+# def evaluate_control(board_matrix, color, pieces):
+#     evaluation = 0
+#     control_weight = 0.5
+#
+#     white_controlled_squares, black_controlled_squares = count_controlled_squares(board_matrix, pieces)
+#
+#     if color == 'white':
+#         evaluation += (white_controlled_squares - black_controlled_squares) * control_weight
+#     elif color == 'black':
+#         evaluation += (black_controlled_squares - white_controlled_squares) * control_weight
+#
+#     return evaluation
 
 
 def evaluate_captures(board_matrix, color, move, pieces, captured_piece):
