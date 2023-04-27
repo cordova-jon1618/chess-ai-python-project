@@ -53,15 +53,15 @@ def evaluate_board(board_matrix, color, move, pieces):
     return score
 
 
-def evaluate_board(board_matrix, color, move, pieces):
-    score = 0
-
-    # Evaluate capture score
-    capture_score = evaluate_captures(board_matrix, color, move, pieces)
-    print(f"Capture Score: {capture_score}")
-    score += capture_score
-
-    return score
+# def evaluate_board(board_matrix, color, move, pieces):
+#     score = 0
+#
+#     # Evaluate capture score
+#     capture_score = evaluate_captures(board_matrix, color, move, pieces)
+#     print(f"Capture Score: {capture_score}")
+#     score += capture_score
+#
+#     return score
 
 
 def evaluate_material(board_matrix, color, pieces):
@@ -119,10 +119,13 @@ def evaluate_captures(board_matrix, color, move, pieces):
     if target_cell != " ":
         target_piece = get_piece_by_position(target_col, target_row, pieces)
         if target_piece is not None:
-            if target_cell.isupper() == (color == 'white'):
-                evaluation += target_piece.value
+            # When AI is black, it will try to maximize evaluation, hence, white captures are [+]
+            # if target_cell.isupper() == (color == 'white'): # white was maximizing as color refers to the curr piece
+            if target_cell.isupper() == (target_piece.color == 'white'):
+                evaluation += target_piece.value # now black is maximizing
             else:
-                evaluation -= target_piece.value
+                # evaluation -= target_piece.value # black minimizing
+                evaluation -= target_piece.value  # now white minimizing
 
     return evaluation * capture_weight
 
@@ -279,7 +282,8 @@ def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, move,
 def find_best_move(board_matrix, depth, color, pieces):
     print("--------- DEBUG: Inside find_best_move()-----------------")
     best_move = None
-    best_eval = float('-inf') if color == 'white' else float('inf')
+    # best_eval = float('-inf') if color == 'white' else float('inf') # Black min, White max
+    best_eval = float('inf') if color == 'white' else float('-inf') # Black max, White min
     best_short_term_eval = 0
     best_long_term_eval = 0
 
@@ -302,12 +306,14 @@ def find_best_move(board_matrix, depth, color, pieces):
 
         unapply_move(board_matrix, move, captured_piece)
 
-        if color == 'white' and total_eval > best_eval:
+        # if color == 'white' and total_eval > best_eval:  # Black min, White max
+        if color == 'white' and total_eval < best_eval:
             best_move = move
             best_eval = total_eval
             best_short_term_eval = capture_score
             best_long_term_eval = eval
-        elif color == 'black' and total_eval < best_eval:
+        # elif color == 'black' and total_eval < best_eval: # Black min, White max
+        elif color == 'black' and total_eval > best_eval:
             best_move = move
             best_eval = total_eval
             best_short_term_eval = capture_score
