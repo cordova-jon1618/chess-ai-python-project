@@ -22,7 +22,7 @@ def initialize_chess_game():
     selected_piece = None
     heuristic_score = 0  # Initialize heuristic score
     additional_score = 0  # Initialize additional score
-    depth = 1  # Set the depth of the search tree
+    depth = 3  # Set the depth of the search tree
     player_color = "black"  # Set AI color (This should be set to "black")
 
     # Declare and initialize the board_matrix
@@ -51,6 +51,7 @@ def initialize_chess_game():
                     print("Start button clicked")
                     best_move, best_eval = find_best_move(board_matrix, depth, player_color, pieces_array)
                     print(f"Best move: ({best_move[0]}, {best_move[1]}) -> ({best_move[2]}, {best_move[3]})")
+                    print("Best eval:", best_eval)
                     board = matrix_to_board(board_matrix)
 
                     # Highlight the original position and best move with red
