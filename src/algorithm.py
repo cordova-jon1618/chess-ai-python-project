@@ -276,7 +276,8 @@ def find_best_move(board_matrix, depth, color, pieces):
         total_eval = capture_score + eval
 
         # The eval_color only tells what color was the previous level, no real value in logging it
-        print(f"Move {move} eval {eval}, capture score {capture_score}, evaluated {total_eval} prev color {eval_color}")
+        # print(f"Move {move} eval {eval}, capture score {capture_score},
+        # evaluated {total_eval} prev color {eval_color}")
 
         unapply_move(board_matrix, move, captured_piece)
 

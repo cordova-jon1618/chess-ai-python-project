@@ -110,6 +110,9 @@ def initialize_chess_game():
                     # Update UI buttons and score
                     start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
+                    # Print for debug
+                    print_board_matrix(board_matrix)
+
                 elif reset_button.collidepoint(event.pos):
                     print("Reset button clicked.")
 
@@ -125,6 +128,9 @@ def initialize_chess_game():
                     long_term_heuristic = 0
                     start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
+                    # Print for debug
+                    print_board_matrix(board_matrix)
+
                 else:
                     # Handles User's mouse piece move events
                     short_term_heuristic = 0
@@ -133,11 +139,11 @@ def initialize_chess_game():
                     selected_piece, pieces_array, short_term_heuristic, long_term_heuristic, board_matrix = handle_mouse_click(
                         event, pieces_array, board, screen, selected_piece, short_term_heuristic, long_term_heuristic)
 
-                    # Print for debug
-                    # print_board_matrix(board_matrix)
-
                     # Update UI buttons
                     start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
+
+                    # Print for debug
+                    print_board_matrix(board_matrix)
 
         pygame.display.flip()
 
