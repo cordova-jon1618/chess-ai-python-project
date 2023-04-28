@@ -2,8 +2,11 @@
 Chess AI Python Project for COMP 469
 
 Meet the Team:
-Jonathan Cordova @cordova-jon1618 and
-Alvaro Lopez-Romero @alvarolopezromero
+
+Jonathan Cordova @cordova-jon1618 - https://github.com/cordova-jon1618
+
+Alvaro Lopez-Romero @alvarolopezromero - https://github.com/alvarolopezromero
+
 
 CSUN Spring 2023 - COMP 469 - Introduction to Artificial Intelligence
 
