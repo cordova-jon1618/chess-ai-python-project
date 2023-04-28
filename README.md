@@ -15,7 +15,7 @@ How to run our project:
 
 ![image](https://user-images.githubusercontent.com/29684905/235262840-9bec7ba0-c9d9-40c6-94c6-8ad7caa60b11.png)
 
-2. Download Pycharm or IntelliJ
+2. Download Pycharm or IntelliJ (We recommend using Pycharm as this is the IDE we use to build this program)
 
 ![image](https://user-images.githubusercontent.com/29684905/235262890-d3619ac8-c4fa-4f74-a8f4-401863bf5d89.png)
 
@@ -23,13 +23,17 @@ How to run our project:
 
 ![image](https://user-images.githubusercontent.com/29684905/235262929-c9503bcd-7345-4185-8f14-40c91168c278.png)
 
-4. Open the project in either IDE and open the main.py file and select run in the program starting in the main.py file.
+4. When you open the project in the IDE, the file and folder structure should look like this below.
+
+![image](https://user-images.githubusercontent.com/29684905/235264818-92bd48cd-0756-49ba-b684-e0d6047de594.png)
+
+5. Open the project in either IDE and open the main.py file and select run in the program starting in the main.py file.
 
 ![image](https://user-images.githubusercontent.com/29684905/235263042-a06a0df1-8d5b-4785-8b69-3ba1b3735460.png)
 
-5. Upon running the program, you should see a Chess board, you can run the AI using “Start”, clear the board with “Reset” after moving pieces around the board, or LEFT mouse click to select a piece, or RIGHT mouse click to unselect the piece.
+6. Upon running the program, you should see a Chess board, you can run the AI using “Start”, clear the board with “Reset” after moving pieces around the board, or LEFT mouse click to select a piece, or RIGHT mouse click to unselect the piece.
 
 ![image](https://user-images.githubusercontent.com/29684905/235263059-619ef7e1-21a0-4adb-9546-0b9bc0b4561d.png)
 
-6. You can now play chess with the AI.
+7. You can now play chess with the AI.
 
