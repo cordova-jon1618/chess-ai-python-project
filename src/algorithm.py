@@ -39,8 +39,9 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
     score = round(score, 1)
 
     print("--------- DEBUG: Ending evaluate_board() -----------------", score)
+    print("Evaluated Color at bottom of tree is: ", color)
     # Return the total evaluation score
-    return score
+    return score, color
 
 
 # This function sums up all the possible moves for the color. A weight is added to decrease the influence.
@@ -166,29 +167,58 @@ def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, move,
     opponent_color = 'white' if color == 'black' else 'black'
     moves = generate_moves(board_matrix, opponent_color, pieces)
 
+    # if is_maximizing_player:
+    #     max_eval = float('-inf')
+    #     for next_move in moves:
+    #         eval = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, next_move, pieces,
+    #                        captured_piece)
+    #         max_eval = max(max_eval, eval)
+    #         alpha = max(alpha, eval)
+    #         if beta <= alpha:
+    #             break
+
     if is_maximizing_player:
         max_eval = float('-inf')
+        max_color = None
         for next_move in moves:
-            eval = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, next_move, pieces,
-                           captured_piece)
-            max_eval = max(max_eval, eval)
+            eval, curr_color = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, next_move, pieces,
+                                       captured_piece)
+            if eval > max_eval:
+                max_eval = eval
+                max_color = curr_color
+                print("max_color is: ", max_color)
             alpha = max(alpha, eval)
             if beta <= alpha:
                 break
 
+    # else:
+    #     min_eval = float('inf')
+    #     for next_move in moves:
+    #         eval = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, next_move, pieces,
+    #                        captured_piece)
+    #         min_eval = min(min_eval, eval)
+    #         beta = min(beta, eval)
+    #         if beta <= alpha:
+    #             break
+
     else:
         min_eval = float('inf')
+        min_color = None
         for next_move in moves:
-            eval = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, next_move, pieces,
-                           captured_piece)
-            min_eval = min(min_eval, eval)
+            eval, curr_color = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, next_move, pieces,
+                                       captured_piece)
+            if eval < min_eval:
+                min_eval = eval
+                min_color = curr_color
+                print("min_color is: ", min_color)
             beta = min(beta, eval)
             if beta <= alpha:
                 break
 
     unapply_move(board_matrix, move, captured_piece)
     print("--------- DEBUG: Ending minimax() -----------------")
-    return max_eval if is_maximizing_player else min_eval
+    # return max_eval if is_maximizing_player else min_eval
+    return (max_eval, color) if is_maximizing_player else (min_eval, color)
 
 
 def find_best_move(board_matrix, depth, color, pieces):
@@ -210,11 +240,15 @@ def find_best_move(board_matrix, depth, color, pieces):
         capture_score = evaluate_captures(board_matrix, color, move, pieces, captured_piece)
 
         # Call minimax to calculate the best move in the future
-        eval = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'), opponent_color, move,
-                       pieces, captured_piece)
+        # eval = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'), opponent_color, move, pieces, captured_piece)
+        eval, eval_color = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'),
+                                   opponent_color, move, pieces, captured_piece)
 
         # Combine capture score and minimax evaluation
         total_eval = capture_score + eval
+
+        # checking what depth black or white evaluation minimax stops at.
+        print(f"Move {move} evaluated as {total_eval} for {eval_color}")
 
         unapply_move(board_matrix, move, captured_piece)
 

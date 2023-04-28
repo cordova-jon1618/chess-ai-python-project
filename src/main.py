@@ -21,7 +21,13 @@ def initialize_chess_game():
     selected_piece = None
     # heuristic_score = 0  # Initialize heuristic score
     # additional_score = 0  # Initialize additional score
-    depth = 3  # Set the depth of the search tree
+
+
+    # IMPORTANT: THE AI ALWAYS PLAYS AS BLACK, WHEN BUILDING A MINIMAX TREE, THE LAST LEVEL IS ODD FOR WHITE AND EVEN
+    #           FOR BLACK, TO RETURN THE LONG-TERM HEURISTIC FOR BLACK, MAKE SURE THE DEPTH IS AN EVEN NUMBER.
+    depth = 2  # Set the depth of the search tree
+
+
     player_color = "black"  # Set AI color (This should be set to "black")
 
     short_term_heuristic = 0  # Initialize ST heuristic score
