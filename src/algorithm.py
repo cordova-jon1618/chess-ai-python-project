@@ -40,12 +40,12 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
     # Evaluate mobility score
     mobility_score = evaluate_mobility(board_matrix, color, pieces)
     mobility_score = round(mobility_score, 1)
-    print(f"Mobility Score: {mobility_score}")
+    # print(f"Mobility Score: {mobility_score}")
     score += mobility_score
 
     # Evaluate capture score
     capture_score = evaluate_captures(board_matrix, color, move, pieces, captured_piece)
-    print(f"Capture Score: {capture_score}")
+    # print(f"Capture Score: {capture_score}")
     score += capture_score
 
     # Adding a small random value to the score to prevent oscillating between two states
@@ -296,7 +296,7 @@ def find_best_move(board_matrix, depth, color, pieces):
 
     print("Short-Term Heuristic Score: ", best_short_term_eval)
     print("Long-Term Heuristic Score: ", best_long_term_eval)
-    print(f"Move {move} total evaluated as {total_eval}")
+    print(f"Best move {best_move} best evaluated as {best_eval}")
 
     return best_move, best_eval, best_short_term_eval, best_long_term_eval
 

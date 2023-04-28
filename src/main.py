@@ -32,9 +32,8 @@ def initialize_chess_game():
     selected_piece = None
 
     # NOTE:     The AI is set to play as black, when updating the 'depth' variable, keep in mind that when
-    #           building a minimax tree, the last level of the tree is odd for white and even for black. Please keep
-    #           depth as an even number in order for the last level to return the long-term heuristic for black into
-    #           the UI interface.
+    #           building a minimax tree, the last level of the tree is odd for white and even for black.
+    #
 
     depth = 2  # Set the depth of the search tree
 
