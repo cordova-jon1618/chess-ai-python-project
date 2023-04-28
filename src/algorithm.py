@@ -77,7 +77,8 @@ def evaluate_captures(board_matrix, color, move, pieces, captured_piece):
                 evaluation += target_piece.value  # now black is maximizing
             elif target_cell.islower() == (target_piece.color == 'black'):
                 # evaluation -= target_piece.value # black minimizing
-                evaluation -= target_piece.value  # now white minimizing
+                # evaluation -= target_piece.value  # now white minimizing
+                evaluation += target_piece.value # now white minimizing -------------
 
     return evaluation * capture_weight
 
@@ -152,6 +153,10 @@ def unapply_move(board_matrix, move, captured_piece):
     return board_matrix
 
 
+# Even though it only evaluates the position from the AI's perspective (black), it still considers the consequences of
+# the human player's (white) actions through the recursive nature of the Minimax algorithm. Hence, even though the
+# evaluation function only explicitly considers the black player's perspective, the full algorithm still effectively
+# considers both players' perspectives.
 def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, move, pieces, captured_piece):
     print("--------- DEBUG: Inside minimax() -----------------")
     if depth == 0:
