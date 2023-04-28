@@ -1,11 +1,11 @@
 # chess-ai-python-project
 Chess AI Python Project for COMP 469
-Authors:
 
-Jonathan Cordova and
-Alvaro Lopez-Romero
+Meet the Team:
+Jonathan Cordova @cordova-jon1618 and
+Alvaro Lopez-Romero @alvarolopezromero
 
-CSUN COMP 469
+CSUN Spring 2023 - COMP 469 - Introduction to Artificial Intelligence
 
 About:
 Our project is an AI Chess Game Project using Python. We are utilizing Python and Pygame (which is a cross-platform set of Python modules designed for writing video games). Our project features a graphical user interface (UI) that allows users to move the chess pieces on the board, with each piece type having their own movement functionality. The current state of the board is converted into a matrix, and then used as input into the Minimax Algorithm with Alpha-Beta Pruning, this will allow the AI to select an optimal move. Afterwards the user can make their chess move and then click a UI button so that the algorithm runs the algorithm to calculate the next move, hence, playing chess with an AI algorithm.
