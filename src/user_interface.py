@@ -1,6 +1,13 @@
 import pygame
 
 
+# Chess AI Python Project for COMP 469: Intro to Artificial Intelligence
+# Authors:
+# Jonathan Cordova and Alvaro Lopez-Romero
+# California State University Northridge (CSUN)
+
+# NOTE:  This user_interface.py file contains functionality such as the User's ability to select and move pieces,
+#        checking if a chess move is valid, converting the board state into a board matrix and helper functions.
 def draw_ui_elements(screen, heuristic_score, additional_score):
     font_name = "calibri"
     font = pygame.font.SysFont(font_name, 24)
@@ -16,9 +23,7 @@ def draw_ui_elements(screen, heuristic_score, additional_score):
     score_text = font.render(f"AI Short-Term Heuristic: {heuristic_score}", True, (255, 255, 255))
     additional_score_text = font.render(f"AI Long-Term Heuristic: {additional_score}", True, (255, 255, 255))
 
-    # pygame.draw.rect(screen, (0, 255, 0), start_button)
     pygame.draw.rect(screen, (80, 240, 180), start_button)
-    # pygame.draw.rect(screen, (255, 0, 0), reset_button)
     pygame.draw.rect(screen, (255, 127, 127), reset_button)
 
     start_text_x = start_button.x + (start_button.width - start_text.get_width()) // 2
@@ -63,6 +68,7 @@ def update_UI_view(screen, heuristic_score, additional_score):
     return start_button, reset_button
 
 
+# This function is no longer being used.
 def add_to_score(piece_captured, heuristic_score, additional_score):
     if piece_captured.color == 'black':
         additional_score += piece_captured.value

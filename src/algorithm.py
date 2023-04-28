@@ -1,8 +1,21 @@
-from movement import is_valid_move, remove_piece_at_position
+from movement import *
 from piece import *
 import random
 
 
+# Chess AI Python Project for COMP 469: Intro to Artificial Intelligence
+# Authors:
+# Jonathan Cordova and Alvaro Lopez-Romero
+# California State University Northridge (CSUN)
+
+# NOTE:  This algorithm.py file contains the core functionality for this program, including
+#        the minimax algorithm, find_best_move function that calls the minimax, the evaluation functions,
+#        a brunch of helper functions, functions such as generate_move that generate all possible moves at the
+#        current board state for a color, functions such as apply_move and unapply_move to change the board state
+#        in order to go deeper into the minimax tree, then reverse the board states afterwards.
+
+
+# Helper function
 def print_pieces_array(pieces):
     print("-----------------------------------------------")
     for p in pieces:
@@ -10,6 +23,7 @@ def print_pieces_array(pieces):
     print("-----------------------------------------------")
 
 
+# Helper function
 def print_piece_info(p):
     print("-----------------------------------------------")
     print("This is the piece found to be moved. X=",
@@ -17,13 +31,15 @@ def print_piece_info(p):
     print("-----------------------------------------------")
 
 
+# This function takes the capture score and mobility score for the board state and calculates an evaluation.
+# This is first called when the minimax algorithm reaches the bottom of the tree.
 def evaluate_board(board_matrix, color, move, pieces, captured_piece):
-    print("--------- DEBUG: Inside evaluate_board() -----------------")
     # Initialize the total evaluation score
     score = 0
 
     # Evaluate mobility score
     mobility_score = evaluate_mobility(board_matrix, color, pieces)
+    mobility_score = round(mobility_score, 1)
     print(f"Mobility Score: {mobility_score}")
     score += mobility_score
 
@@ -33,12 +49,12 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
     score += capture_score
 
     # Adding a small random value to the score to prevent oscillating between two states
+    # This avoids the potential of local minimum or local maximum
     score += random.uniform(-0.5, 0.5)
 
     # Round the score to 1 decimal places
     score = round(score, 1)
 
-    print("--------- DEBUG: Ending evaluate_board() -----------------", score)
     print("Evaluated Color at bottom of tree is: ", color)
     # Return the total evaluation score
     return score, color
@@ -47,19 +63,29 @@ def evaluate_board(board_matrix, color, move, pieces, captured_piece):
 # This function sums up all the possible moves for the color. A weight is added to decrease the influence.
 def evaluate_mobility(board_matrix, color, pieces):
     evaluation = 0
-    mobility_weight = 0.05
+    mobility_weight = 0.05  # We do not want this score to have significant influence
 
-    moves = generate_moves(board_matrix, color, pieces)
+    # Generates possible moves for the board state so it can calculate a mobility score
+    # Notice that the below is a different generate move function, each has different purposes
+    # generate_move allows the AI to move black only, whereas the one use for evaluation, evaluates both white and
+    # black pieces, to assist in the minimax algorithm.
+    moves = generate_moves_for_evaluation(board_matrix, color, pieces)
+    # moves = generate_moves(board_matrix, color, pieces)
     move_count = len(moves)
 
-    if color == 'white':
+    # Evaluation is a positive number for both because the min and max comparison
+    # are taken care during the minimax traversal.
+    if color == 'black':
+        # Black will try to MAXIMIZE this evaluation score in the minimax algorithm (AI is black maximizing)
         evaluation += move_count * mobility_weight
-    elif color == 'black':
+    elif color == 'white':
+        # Black will try to MINIMIZE this evaluation score in the minimax algorithm (AI is white minimizing)
         evaluation += move_count * mobility_weight
 
     return evaluation
 
 
+# This function calculates the value of capturing a piece during the board state
 def evaluate_captures(board_matrix, color, move, pieces, captured_piece):
     evaluation = 0
     capture_weight = 1
@@ -70,47 +96,44 @@ def evaluate_captures(board_matrix, color, move, pieces, captured_piece):
     if target_cell != " ":
         target_piece = get_piece_by_position(target_col, target_row, pieces)
         if target_piece is not None:
-            # When AI is black, it will try to maximize evaluation, hence, white captures are [+]
-            # if target_cell.isupper() == (color == 'white'): # white was maximizing as color refers to the curr piece
             print("Target Cell is: ", target_cell, " and target color is: ", target_piece.color,
                   " and the target value is: ", target_piece.value)
             if target_cell.isupper() == (target_piece.color == 'white'):
-                evaluation += target_piece.value  # now black is maximizing
+                # Black will try to MAXIMIZE this evaluation score in the minimax algorithm (AI is black maximizing)
+                evaluation += target_piece.value
             elif target_cell.islower() == (target_piece.color == 'black'):
-                # evaluation -= target_piece.value # black minimizing
-                # evaluation -= target_piece.value  # now white minimizing
-                evaluation += target_piece.value # now white minimizing -------------
+                # Black will try to MINIMIZE this evaluation score in the minimax algorithm (AI is white minimizing)
+                evaluation += target_piece.value
 
     return evaluation * capture_weight
 
 
+# Helper function, gets the piece information by the positive X, Y passed as parameter
 def get_piece_by_position(x, y, pieces):
-    # print("--------- DEBUG: Inside get_piece_by_position() -----------------")
     for piece in pieces:
         if piece.x == x and piece.y == y:
-            # print("--------- DEBUG: Ending get_piece_by_position() -----------------")
             return piece
-
-    # print("--------- DEBUG: Ending get_piece_by_position() -----------------")
     return None
 
 
+# generate all possible moves at the
+#        current board state for a color
 def generate_moves(board_matrix, color, pieces):
-    print("--------- DEBUG: Inside generate_moves() -----------------")
     moves = []
     for col in range(8):
         for row in range(8):
             piece_symbol = board_matrix[row][col]
+
+            # The reason we are restricting only to black is that the AI is controlling black pieces only
             if piece_symbol != ' ' and (piece_symbol.islower() == (color == 'black')):
                 piece_moves = generate_piece_moves(board_matrix, col, row, pieces)
                 moves.extend(piece_moves)
-
-    print(f"--------- DEBUG: Ending generate_moves() -----------------")
     return moves
 
 
+# generate all possible moves at the
+#        current board state for a piece
 def generate_piece_moves(board_matrix, col, row, pieces):
-    # print("--------- DEBUG: Inside generate_piece_moves() -----------------")
     piece_symbol = board_matrix[row][col]
     color = 'white' if piece_symbol.isupper() else 'black'
     piece_type = piece_symbol.lower()
@@ -123,108 +146,113 @@ def generate_piece_moves(board_matrix, col, row, pieces):
             if is_valid_move(piece, target_col, target_row, pieces):
                 moves.append((col, row, target_col, target_row))
 
-    # print("--------- DEBUG: Ending generate_piece_moves() -----------------")
     return moves
 
 
+# This function we are using for the mobility evaluation only
+def generate_moves_for_evaluation(board_matrix, color, pieces):
+    moves = []
+    for col in range(8):
+        for row in range(8):
+            piece_symbol = board_matrix[row][col]
+
+            # Check if the piece_symbol is of the same color as specified
+            if piece_symbol != ' ' and (piece_symbol.islower() == (color == 'black')) or (
+                    piece_symbol.isupper() == (color == 'white')):
+                piece_moves = generate_piece_moves(board_matrix, col, row, pieces)
+                moves.extend(piece_moves)
+    return moves
+
+
+# This function applies a move to the board_matrix to calculate the next level nodes in the tree
 def apply_move(board_matrix, move):
-    print("--------- DEBUG: Inside apply_move() -----------------")
     start_col, start_row, end_col, end_row = move
+
+    # Gets moving piece
     moving_piece = board_matrix[start_row][start_col]
-    captured_piece = board_matrix[end_row][end_col]  # Store the captured piece
+
+    # Gets captured piece (if any)
+    captured_piece = board_matrix[end_row][end_col]
     print("Moving Piece is: ", moving_piece)
     print("Captured Piece is: ", captured_piece)
+
+    # Updates board state
     board_matrix[end_row][end_col] = moving_piece
     board_matrix[start_row][start_col] = ' '
-    print_board_matrix(board_matrix)
 
-    print("--------- DEBUG: Ending apply_move() -----------------")
+    # Debugging
+    # print_board_matrix(board_matrix)
+
     return captured_piece
 
 
 # The function reverses the move by moving the piece back to its original position
 # used for calculating reversing possible states when building minimax tree
 def unapply_move(board_matrix, move, captured_piece):
-    print("--------- DEBUG: Inside unapply_move() -----------------")
     start_col, start_row, end_col, end_row = move
+    # Reverses the move by moving the piece back to its original position
+    # Used for calculating reversing possible states when building minimax tree
     board_matrix[start_row][start_col] = board_matrix[end_row][end_col]
     board_matrix[end_row][end_col] = captured_piece
-    print("--------- DEBUG: Ending unapply_move() -----------------")
 
     return board_matrix
 
 
-# Even though it only evaluates the position from the AI's perspective (black), it still considers the consequences of
-# the human player's (white) actions through the recursive nature of the Minimax algorithm. Hence, even though the
-# evaluation function only explicitly considers the black player's perspective, the full algorithm still effectively
-# considers both players' perspectives.
+# Minimax Algorithm
 def minimax(board_matrix, depth, is_maximizing_player, alpha, beta, color, move, pieces, captured_piece):
-    print("--------- DEBUG: Inside minimax() -----------------")
+    # Base case: if depth is 0, reaching the bottom of the minimax tree, evaluate the board and return the evaluation
     if depth == 0:
         return evaluate_board(board_matrix, color, move, pieces, captured_piece)
 
+    # Apply the move and store the captured piece
     captured_piece = apply_move(board_matrix, move)
+    # Determine the opponent's color, this switches between colors at each level down the tree
     opponent_color = 'white' if color == 'black' else 'black'
     moves = generate_moves(board_matrix, opponent_color, pieces)
-
-    # if is_maximizing_player:
-    #     max_eval = float('-inf')
-    #     for next_move in moves:
-    #         eval = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, next_move, pieces,
-    #                        captured_piece)
-    #         max_eval = max(max_eval, eval)
-    #         alpha = max(alpha, eval)
-    #         if beta <= alpha:
-    #             break
 
     if is_maximizing_player:
         max_eval = float('-inf')
         max_color = None
         for next_move in moves:
+            # Recursively call minimax for each move and update evaluation and color
             eval, curr_color = minimax(board_matrix, depth - 1, False, alpha, beta, opponent_color, next_move, pieces,
                                        captured_piece)
             if eval > max_eval:
                 max_eval = eval
                 max_color = curr_color
                 print("max_color is: ", max_color)
+            # Update alpha for alpha-beta pruning
             alpha = max(alpha, eval)
+            # Prune if necessary
             if beta <= alpha:
                 break
-
-    # else:
-    #     min_eval = float('inf')
-    #     for next_move in moves:
-    #         eval = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, next_move, pieces,
-    #                        captured_piece)
-    #         min_eval = min(min_eval, eval)
-    #         beta = min(beta, eval)
-    #         if beta <= alpha:
-    #             break
 
     else:
         min_eval = float('inf')
         min_color = None
         for next_move in moves:
+            # Recursively call minimax for each move and update evaluation and color
             eval, curr_color = minimax(board_matrix, depth - 1, True, alpha, beta, opponent_color, next_move, pieces,
                                        captured_piece)
             if eval < min_eval:
                 min_eval = eval
                 min_color = curr_color
                 print("min_color is: ", min_color)
+            # Update beta for alpha-beta pruning
             beta = min(beta, eval)
+            # Prune if necessary
             if beta <= alpha:
                 break
 
+    # Undo the move and restore the captured piece
     unapply_move(board_matrix, move, captured_piece)
-    print("--------- DEBUG: Ending minimax() -----------------")
-    # return max_eval if is_maximizing_player else min_eval
+
+    # Return the best evaluation and the color associated with it
     return (max_eval, color) if is_maximizing_player else (min_eval, color)
 
 
 def find_best_move(board_matrix, depth, color, pieces):
-    print("--------- DEBUG: Inside find_best_move()-----------------")
     best_move = None
-    # best_eval = float('-inf') if color == 'white' else float('inf') # Black min, White max
     best_eval = float('inf') if color == 'white' else float('-inf')  # Black max, White min
     best_short_term_eval = 0
     best_long_term_eval = 0
@@ -240,7 +268,6 @@ def find_best_move(board_matrix, depth, color, pieces):
         capture_score = evaluate_captures(board_matrix, color, move, pieces, captured_piece)
 
         # Call minimax to calculate the best move in the future
-        # eval = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'), opponent_color, move, pieces, captured_piece)
         eval, eval_color = minimax(board_matrix, depth - 1, color == 'black', float('-inf'), float('inf'),
                                    opponent_color, move, pieces, captured_piece)
 
@@ -271,8 +298,8 @@ def find_best_move(board_matrix, depth, color, pieces):
     print("Long-Term Heuristic Score: ", best_long_term_eval)
     print(f"Move {move} total evaluated as {total_eval}")
 
-    print("--------- DEBUG: Ending find_best_move()-----------------")
     return best_move, best_eval, best_short_term_eval, best_long_term_eval
+
 
 def print_board_matrix(board_matrix):
     print("Current board matrix:")

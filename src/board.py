@@ -1,7 +1,13 @@
 import pygame
 from piece import *
 
+# Chess AI Python Project for COMP 469: Intro to Artificial Intelligence
+# Authors:
+# Jonathan Cordova and Alvaro Lopez-Romero
+# California State University Northridge (CSUN)
 
+# NOTE:  This board.py file contains functionality for creating the Board object and making, resetting, converting,
+#        These functions involve the Board object
 class Board:
 
     def __init__(self):
@@ -21,12 +27,12 @@ class Board:
         self.screen.blit(self.board, (20, 20))
         pygame.display.flip()
 
+    # Makes the UI board
     def make_board(self):
 
         pygame.init()
 
         # Setting up window object
-        # size = (640, 640)
         size = (640, 740)
         screen = pygame.display.set_mode(size)
         pygame.display.set_caption("AI Chess Game Project - COMP 469 by Jonathan Cordova and Alvaro Lopez-Romero")
@@ -40,8 +46,6 @@ class Board:
             for y in range(0, 8, 2):
                 pygame.draw.rect(board, (210, 180, 140), (x * 75, y * 75, 75, 75))
                 pygame.draw.rect(board, (210, 180, 140), ((x + 1) * 75, (y + 1) * 75, 75, 75))
-                # pygame.draw.rect(board, (210, 180, 140), (y * 75, (7 - x) * 75, 75, 75))
-                # pygame.draw.rect(board, (210, 180, 140), ((y + 1) * 75, (7 - (x + 1)) * 75, 75, 75))
 
         # Adding the board to the screen object
         screen.blit(board, (20, 20))
@@ -51,6 +55,7 @@ class Board:
 
         return board, screen
 
+    # Resets the UI board
     def reset_board(self, board_surface):
         # Clear the board surface
         board_surface.fill((255, 206, 158))
@@ -60,12 +65,11 @@ class Board:
             for y in range(0, 8, 2):
                 pygame.draw.rect(board_surface, (210, 180, 140), (x * 75, y * 75, 75, 75))
                 pygame.draw.rect(board_surface, (210, 180, 140), ((x + 1) * 75, (y + 1) * 75, 75, 75))
-                # pygame.draw.rect(board_surface, (210, 180, 140), (y * 75, (7 - x) * 75, 75, 75))
-                # pygame.draw.rect(board_surface, (210, 180, 140), ((y + 1) * 75, (7 - (x + 1)) * 75, 75, 75))
 
         return board_surface
 
 
+# Converts matrix array to board object
 def matrix_to_board(matrix):
     board = Board()
     surface, screen = board.make_board()

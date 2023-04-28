@@ -2,31 +2,41 @@ import pygame
 from board import *
 from piece import *
 from movement import *
-from game_logic import *
+from user_interface import *
 from algorithm import *
 
 
-# Notes: We will not implement the following chess functionality
-# No castling by King and Rook
-# No winning conditions as this project is to show the AI Chess functionality
+# Chess AI Python Project for COMP 469: Intro to Artificial Intelligence
+# Authors:
+# Jonathan Cordova and Alvaro Lopez-Romero
+# California State University Northridge (CSUN)
+
+
+# NOTE:  We will not implement the following chess functionality:
+#        No castling by King and Rook
+#        No winning conditions as this project is to showcase our AI Chess functionality
 
 def initialize_chess_game():
-    chess_board = Board()
-    board, screen = chess_board.make_board()
 
+    # Declare Board object
+    chess_board = Board()
+    # Make board and screen
+    board, screen = chess_board.make_board()
+    # Declare Piece object
     chess_piece = Piece(None, None, None, None, None)
-    pieces_array, white_pieces_array, black_pieces_array = chess_piece.place_pieces_on_board(board, screen)
+
+    # Returns the pieces array of black and white, we are no longer using the other return arrays
+    pieces_array, _, _ = chess_piece.place_pieces_on_board(board, screen)
 
     running = True
     selected_piece = None
-    # heuristic_score = 0  # Initialize heuristic score
-    # additional_score = 0  # Initialize additional score
 
+    # NOTE:     The AI is set to play as black, when updating the 'depth' variable, keep in mind that when
+    #           building a minimax tree, the last level of the tree is odd for white and even for black. Please keep
+    #           depth as an even number in order for the last level to return the long-term heuristic for black into
+    #           the UI interface.
 
-    # IMPORTANT: THE AI ALWAYS PLAYS AS BLACK, WHEN BUILDING A MINIMAX TREE, THE LAST LEVEL IS ODD FOR WHITE AND EVEN
-    #           FOR BLACK, TO RETURN THE LONG-TERM HEURISTIC FOR BLACK, MAKE SURE THE DEPTH IS AN EVEN NUMBER.
     depth = 2  # Set the depth of the search tree
-
 
     player_color = "black"  # Set AI color (This should be set to "black")
 
@@ -36,11 +46,13 @@ def initialize_chess_game():
     # Declare and initialize the board_matrix
     board_matrix = board_to_matrix(pieces_array)
 
+    # while the UI chess board window is not closed
     while running:
 
-        # start_button, reset_button = draw_ui_elements(screen, heuristic_score, additional_score)
+        # Drawing UI elements
         start_button, reset_button = draw_ui_elements(screen, short_term_heuristic, long_term_heuristic)
 
+        # if window is closed, then stop program
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -50,26 +62,32 @@ def initialize_chess_game():
             # Handling mouse click
             if event.type == pygame.MOUSEBUTTONDOWN:
 
-                # Round the scores to 2 decimal places
-                # heuristic_score = round(heuristic_score, 1)
-                # additional_score = round(additional_score, 1)
+                # Round the scores to 1 decimal place
                 short_term_heuristic = round(short_term_heuristic, 1)
                 long_term_heuristic = round(long_term_heuristic, 1)
 
-                # Check if the start or reset button was clicked
+                # Check if the start or reset button is clicked
                 if start_button.collidepoint(event.pos):
-                    print("Start button clicked")
-                    best_move, best_eval, short_term_heuristic, long_term_heuristic = find_best_move(board_matrix, depth, player_color, pieces_array)
+                    print("Start button clicked.")
+
+                    # Find Best Move function is called, this will start the minimax algorithm
+                    best_move, best_eval, short_term_heuristic, long_term_heuristic = find_best_move(board_matrix,
+                                                                                                     depth,
+                                                                                                     player_color,
+                                                                                                     pieces_array)
                     print(f"Best move: ({best_move[0]}, {best_move[1]}) -> ({best_move[2]}, {best_move[3]})")
                     print("Best eval:", best_eval)
+
+                    # Turns the matrix array into a board object
                     board = matrix_to_board(board_matrix)
 
-                    # Highlight the original position and best move with red
+                    # Highlight the original position and AI's best move with red highlight
                     highlighted_squares = [(best_move[0], best_move[1]), (best_move[2], best_move[3])]
 
-                    # Redraw the board and pieces with highlighted squares (Before Move)
+                    # Redraw the board and pieces with highlighted squares (Before AI's Best Move is applied)
                     redraw_pieces_on_board_with_red_highlight(pieces_array, board, screen, highlighted_squares)
-                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
+
+                    # Update UI view
                     start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
                     # Wait for some time
@@ -79,9 +97,8 @@ def initialize_chess_game():
                     pieces_array = update_pieces_array(pieces_array, best_move)
                     board_matrix = board_to_matrix(pieces_array)
 
-                    # Redraw the board and pieces with highlighted squares (After Move)
+                    # Redraw the board and pieces with highlighted squares (After AI's Best Move is applied)
                     redraw_pieces_on_board_with_red_highlight(pieces_array, board, screen, highlighted_squares)
-                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
                     start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
                     # Wait for some time
@@ -90,73 +107,45 @@ def initialize_chess_game():
                     # Update UI WITHOUT the red highlight
                     redraw_pieces_on_board(pieces_array, board, screen)
 
-                    # Update Heuristic Score
-                    # heuristic_score += best_eval
-
-                    # Round the scores to 2 decimal places
-                    # heuristic_score = round(heuristic_score, 1)
-                    # additional_score = round(additional_score, 1)
-
                     # Update UI buttons and score
-                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
                     start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
-
                 elif reset_button.collidepoint(event.pos):
-                    print("Reset button clicked")
+                    print("Reset button clicked.")
+
                     # Clear the board and reset the game
                     chess_board.reset_board(board)
-                    pieces_array, white_pieces_array, black_pieces_array = chess_piece.place_pieces_on_board(board,
-                                                                                                             screen)
+                    pieces_array, _, _ = chess_piece.place_pieces_on_board(board, screen)
 
                     # Reset the board_matrix based on the reset pieces_array
                     board_matrix = board_to_matrix(pieces_array)
 
                     selected_piece = None
-                    heuristic_score = 0
-                    additional_score = 0
                     short_term_heuristic = 0
                     long_term_heuristic = 0
-                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
                     start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
                 else:
-                    # Handle piece mouse click events
-
+                    # Handles User's mouse piece move events
                     short_term_heuristic = 0
                     long_term_heuristic = 0
 
-                    # selected_piece, pieces_array, heuristic_score, additional_score, board_matrix = handle_mouse_click(
-                    #     event, pieces_array, board, screen,
-                    #     selected_piece, heuristic_score, additional_score)
-                    selected_piece, pieces_array, short_term_heuristic, long_term_heuristic, board_matrix = handle_mouse_click(event, pieces_array, board, screen, selected_piece, short_term_heuristic, long_term_heuristic)
+                    selected_piece, pieces_array, short_term_heuristic, long_term_heuristic, board_matrix = handle_mouse_click(
+                        event, pieces_array, board, screen, selected_piece, short_term_heuristic, long_term_heuristic)
 
-                    # ------------------------------------------------
-                    # Print the updated board_matrix for debugging
-                    # ------------------------------------------------
+                    # Print for debug
                     # print_board_matrix(board_matrix)
-                    # Round the scores to 2 decimal places
-                    # heuristic_score = round(heuristic_score, 1)
-                    # additional_score = round(additional_score, 1)
 
                     # Update UI buttons
-                    # start_button, reset_button = update_UI_view(screen, heuristic_score, additional_score)
                     start_button, reset_button = update_UI_view(screen, short_term_heuristic, long_term_heuristic)
 
         pygame.display.flip()
 
 
-# def print_board_matrix(board_matrix):
-#     print("Current board matrix:")
-#     for row in board_matrix:
-#         print(row)
-#     print()
-
-
 def update_pieces_array(pieces_array, move):
     start_x, start_y, end_x, end_y = move
 
-    # Remove the existing piece at the target location
+    # Remove the existing piece at the target location, no longer passing scores here, so using 0, 0 as last parameters
     pieces_array, _, _ = remove_piece_at_position(pieces_array, end_x, end_y, 0, 0)
 
     # Move the selected piece to the new location
@@ -166,10 +155,12 @@ def update_pieces_array(pieces_array, move):
             piece.y = end_y
             break
 
+    # Returns new updated pieces_array
     return pieces_array
 
 
 def main():
+    # Starts everything
     initialize_chess_game()
 
 
