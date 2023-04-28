@@ -36,7 +36,7 @@ def initialize_chess_game():
     #           depth as an even number in order for the last level to return the long-term heuristic for black into
     #           the UI interface.
 
-    depth = 2  # Set the depth of the search tree
+    depth = 4  # Set the depth of the search tree
 
     player_color = "black"  # Set AI color (This should be set to "black")
 

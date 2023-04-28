@@ -65,12 +65,8 @@ def evaluate_mobility(board_matrix, color, pieces):
     evaluation = 0
     mobility_weight = 0.05  # We do not want this score to have significant influence
 
-    # Generates possible moves for the board state so it can calculate a mobility score
-    # Notice that the below is a different generate move function, each has different purposes
-    # generate_move allows the AI to move black only, whereas the one use for evaluation, evaluates both white and
-    # black pieces, to assist in the minimax algorithm.
-    moves = generate_moves_for_evaluation(board_matrix, color, pieces)
-    # moves = generate_moves(board_matrix, color, pieces)
+    # Generates possible moves for the board state so algorithm can calculate a mobility score
+    moves = generate_moves(board_matrix, color, pieces)
     move_count = len(moves)
 
     # Evaluation is a positive number for both because the min and max comparison
@@ -118,14 +114,30 @@ def get_piece_by_position(x, y, pieces):
 
 # generate all possible moves at the
 #        current board state for a color
+# def generate_moves(board_matrix, color, pieces):
+#     moves = []
+#     for col in range(8):
+#         for row in range(8):
+#             piece_symbol = board_matrix[row][col]
+#
+#             # The reason we are restricting only to black is that the AI is controlling black pieces only
+#             if piece_symbol != ' ' and (piece_symbol.islower() == (color == 'black')):
+#                 piece_moves = generate_piece_moves(board_matrix, col, row, pieces)
+#                 moves.extend(piece_moves)
+#     return moves
+
+
+# This function generate moves for the white pieces as well as AI's black pieces
+# allowing the minimax algorithm to correctly evaluate the game tree for both sides.
 def generate_moves(board_matrix, color, pieces):
     moves = []
     for col in range(8):
         for row in range(8):
             piece_symbol = board_matrix[row][col]
 
-            # The reason we are restricting only to black is that the AI is controlling black pieces only
-            if piece_symbol != ' ' and (piece_symbol.islower() == (color == 'black')):
+            # Check if the piece_symbol is of the same color as specified
+            if piece_symbol != ' ' and (piece_symbol.islower() == (color == 'black')) or (
+                    piece_symbol.isupper() == (color == 'white')):
                 piece_moves = generate_piece_moves(board_matrix, col, row, pieces)
                 moves.extend(piece_moves)
     return moves
@@ -150,18 +162,6 @@ def generate_piece_moves(board_matrix, col, row, pieces):
 
 
 # This function we are using for the mobility evaluation only
-def generate_moves_for_evaluation(board_matrix, color, pieces):
-    moves = []
-    for col in range(8):
-        for row in range(8):
-            piece_symbol = board_matrix[row][col]
-
-            # Check if the piece_symbol is of the same color as specified
-            if piece_symbol != ' ' and (piece_symbol.islower() == (color == 'black')) or (
-                    piece_symbol.isupper() == (color == 'white')):
-                piece_moves = generate_piece_moves(board_matrix, col, row, pieces)
-                moves.extend(piece_moves)
-    return moves
 
 
 # This function applies a move to the board_matrix to calculate the next level nodes in the tree
@@ -256,6 +256,7 @@ def find_best_move(board_matrix, depth, color, pieces):
     best_eval = float('inf') if color == 'white' else float('-inf')  # Black max, White min
     best_short_term_eval = 0
     best_long_term_eval = 0
+    # base_eval_color = None
 
     moves = generate_moves(board_matrix, color, pieces)
     print("Generated Moves:", moves)
@@ -274,25 +275,23 @@ def find_best_move(board_matrix, depth, color, pieces):
         # Combine capture score and minimax evaluation
         total_eval = capture_score + eval
 
-        # checking what depth black or white evaluation minimax stops at.
-        print(f"Move {move} evaluated as {total_eval} for {eval_color}")
+        # The eval_color only tells what color was the previous level, no real value in logging it
+        print(f"Move {move} eval {eval}, capture score {capture_score}, evaluated {total_eval} prev color {eval_color}")
 
         unapply_move(board_matrix, move, captured_piece)
 
         # if color == 'white' and total_eval > best_eval:  # Black min, White max
-        if color == 'white' and total_eval < best_eval:
+        if color == 'white' and total_eval < best_eval: # Black max, White min
             best_move = move
             best_eval = total_eval
             best_short_term_eval = capture_score
             best_long_term_eval = eval
         # elif color == 'black' and total_eval < best_eval: # Black min, White max
-        elif color == 'black' and total_eval > best_eval:
+        elif color == 'black' and total_eval > best_eval: # Black max, White min
             best_move = move
             best_eval = total_eval
             best_short_term_eval = capture_score
             best_long_term_eval = eval
-
-        print(f"Move {move} evaluated as {total_eval}")
 
     print("Short-Term Heuristic Score: ", best_short_term_eval)
     print("Long-Term Heuristic Score: ", best_long_term_eval)
